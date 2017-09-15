@@ -239,25 +239,22 @@ describe('tree tests', function() {
     it('should return children with only name and _id fields', function(done) {
 
       User.findOne({'name': 'Carol'}, function(err, carol) {
-
         should.not.exist(err);
 
         carol.getChildren({}, 'name', true, function(err, users) {
-
           should.not.exist(err);
 
           users.length.should.equal(2);
-          users[0].should.not.have.property('parent');
+          users[0].should.not.have.own.property('parent');
           _.map(users, 'name').should.include('Dann').and.include('Emily');
+
           done();
         });
       });
     });
 
     it('should return children sorted on name', function(done) {
-
       User.findOne({'name': 'Carol'}, function(err, carol) {
-
         should.not.exist(err);
 
         carol.getChildren({}, null, {sort: {name: -1}}, true,
@@ -267,12 +264,7 @@ describe('tree tests', function() {
 
               users.length.should.equal(2);
               users[0].name.should.equal('Emily');
-
-              _.map(names)
-                  .should
-                  .include('Dann')
-                  .and
-                  .include('Emily');
+              _.map(users, 'name').should.include('Dann').and.include('Emily');
 
               done();
             });
@@ -281,11 +273,8 @@ describe('tree tests', function() {
   });
 
   describe('level virtual', function() {
-
     it('should equal the number of ancestors', function(done) {
-
       User.findOne({'name': 'Dann'}, function(err, dann) {
-
         should.not.exist(err);
 
         dann.level.should.equal(3);
@@ -297,9 +286,7 @@ describe('tree tests', function() {
   describe('get ancestors', function() {
 
     it('should return ancestors', function(done) {
-
       User.findOne({'name': 'Dann'}, function(err, dann) {
-
         dann.getAncestors(function(err, ancestors) {
 
           should.not.exist(err);
@@ -311,14 +298,12 @@ describe('tree tests', function() {
     });
 
     it('should return ancestors with only name and _id fields', function(done) {
-
       User.findOne({'name': 'Dann'}, function(err, dann) {
-
         dann.getAncestors({}, 'name', function(err, ancestors) {
           should.not.exist(err);
 
           ancestors.length.should.equal(2);
-          ancestors[0].should.not.have.property('parent');
+          ancestors[0].should.not.have.own.property('parent');
           ancestors[0].should.have.property('name');
           _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
           done();
@@ -328,9 +313,7 @@ describe('tree tests', function() {
 
     it('should return ancestors sorted on name and without wrappers',
         function(done) {
-
           User.findOne({'name': 'Dann'}, function(err, dann) {
-
             dann.getAncestors({}, null, {sort: {name: -1}, lean: 1},
                 function(err, ancestors) {
                   should.not.exist(err);
@@ -346,12 +329,10 @@ describe('tree tests', function() {
   });
 
   describe('get children tree', function() {
-
     it('should return complete children tree', function(done) {
-
       User.getChildrenTree(function(err, childrenTree) {
-
         should.not.exist(err);
+
         childrenTree.length.should.equal(2);
 
         var adamTree = _.find(childrenTree,
@@ -385,11 +366,8 @@ describe('tree tests', function() {
     });
 
     it('should return adam\'s children tree', function(done) {
-
       User.findOne({'name': 'Adam'}, function(err, adam) {
-
         adam.getChildrenTree(function(err, childrenTree) {
-
           should.not.exist(err);
 
           var bobTree = _.find(childrenTree,

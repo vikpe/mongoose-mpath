@@ -30,7 +30,6 @@
     "lodash": "^4.17.4",
     "mocha": "^3.5.3",
     "mongoose": "^4.11.11",
-    "shortid": "^2.2.8",
-    "stream-worker": "^2.0.1"
+    "shortid": "^2.2.8"
   }
 }
