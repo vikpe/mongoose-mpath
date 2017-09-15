@@ -1,21 +1,15 @@
-var Mongoose     = require('mongoose');
+var Mongoose = require('mongoose');
+var _        = require('lodash');
+var Async    = require('async');
+var shortId  = require('shortid');
+var should   = require('chai').should();
+var Tree     = require('../lib/tree');
+
+var Schema       = Mongoose.Schema;
 Mongoose.Promise = global.Promise;
-
-var Tree    = require('../lib/tree');
-var Async   = require('async');
-var should  = require('chai').should();
-var _       = require('lodash');
-var shortId = require('shortid');
-
-var Schema = Mongoose.Schema;
-
-var connectOptions = {useMongoClient: true};
-var mongodbUri     = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongoose-path-tree';
-
-Mongoose.connect(mongodbUri, connectOptions);
+Mongoose.connect('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
 
 describe('tree tests', function() {
-
   var userSchema = {
     name: String,
   };
@@ -24,7 +18,7 @@ describe('tree tests', function() {
     pathSeparator: '.',
   };
 
-  if (process.env.MONGOOSE_TREE_SHORTID === '1') {
+  if ('1' === process.env.MONGOOSE_TREE_SHORTID) {
     userSchema._id = {
       type: String,
       unique: true,
@@ -43,9 +37,7 @@ describe('tree tests', function() {
 
   // Set up the fixture
   beforeEach(function(done) {
-
     User.remove({}, function(err) {
-
       should.not.exist(err);
 
       var adam  = new User({name: 'Adam'});
@@ -55,24 +47,23 @@ describe('tree tests', function() {
       var dann  = new User({name: 'Dann', parent: carol});
       var emily = new User({name: 'Emily', parent: dann});
 
-      Async.forEachSeries([adam, bob, carol, dann, emily, eden],
+      Async.forEachSeries(
+          [adam, bob, carol, dann, emily, eden],
           function(doc, callback) {
             doc.save(callback);
-          }, done);
+          },
+          done
+      );
     });
   });
 
   describe('adding documents', function() {
-
     it('should set parent id and path', function(done) {
-
       User.find({}, function(err, users) {
-
         should.not.exist(err);
 
         var names = {};
         users.forEach(function(user) {
-
           names[user.name] = user;
         });
 
@@ -176,11 +167,11 @@ describe('tree tests', function() {
   describe('get children', function() {
     it('should return immediate children with filters', function(done) {
       User.findOne({name: 'Adam'}, function(err, adam) {
-
         should.not.exist(err);
-        adam.getChildren({name: 'Bob'}, function(err, users) {
 
+        adam.getChildren({name: 'Bob'}, function(err, users) {
           should.not.exist(err);
+          
           users.length.should.equal(1);
           _.map(users, 'name').should.include('Bob');
           done();
@@ -267,7 +258,7 @@ describe('tree tests', function() {
       User.findOne({'name': 'Dann'}, function(err, dann) {
         dann.getAncestors(function(err, ancestors) {
           should.not.exist(err);
-          
+
           ancestors.length.should.equal(2);
           _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
           done();
@@ -348,15 +339,10 @@ describe('tree tests', function() {
         adam.getChildrenTree(function(err, childrenTree) {
           should.not.exist(err);
 
-          var bobTree = _.find(childrenTree,
-              function(x) { return x.name === 'Bob';});
-
-          var carolTree = _.find(childrenTree,
-              function(x) { return x.name === 'Carol';});
-          var danTree   = _.find(carolTree.children,
-              function(x) { return x.name === 'Dann';});
-          var emilyTree = _.find(danTree.children,
-              function(x) { return x.name === 'Emily';});
+          var bobTree   = _.find(childrenTree, function(x) { return x.name === 'Bob';});
+          var carolTree = _.find(childrenTree, function(x) { return x.name === 'Carol';});
+          var danTree   = _.find(carolTree.children, function(x) { return x.name === 'Dann';});
+          var emilyTree = _.find(danTree.children, function(x) { return x.name === 'Emily';});
 
           bobTree.children.length.should.equal(0);
           carolTree.children.length.should.equal(1);
