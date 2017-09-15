@@ -1,0 +1,36 @@
+{
+  "name": "mongoose-path-tree",
+  "version": "0.1.0",
+  "description": "Materialized path hierarchy for mongoose",
+  "keywords": [
+    "mongoose",
+    "materialized",
+    "path",
+    "tree",
+    "mongodb"
+  ],
+  "author": "Viktor Persson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vikpe/mongoose-materialized-path.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vikpe/mongoose-materialized-path/issues"
+  },
+  "homepage": "https://github.com/vikpe/mongoose-materialized-path",
+  "scripts": {
+    "test": "MONGOOSE_TREE_SHORTID=1 ./node_modules/.bin/mocha && MONGOOSE_TREE_SHORTID=0 ./node_modules/.bin/mocha"
+  },
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "async": "^2.5.0",
+    "lodash": "^4.17.4",
+    "mocha": "^3.5.3",
+    "mongoose": "^4.11.11",
+    "shortid": "^2.2.8",
+    "should": "^13.0.1",
+    "stream-worker": "^2.0.1"
+  }
+}
