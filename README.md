@@ -1,4 +1,4 @@
-## mongoose-path-tree
+## Mongoose Materialized Path
 [![Build Status](https://travis-ci.org/vikpe/mongoose-materialized-path.svg)](https://travis-ci.org/vikpe/mongoose-materialized-path)
 
 Implements the materialized path strategy with cascade child re-parenting on delete for storing a hierarchy of documents with mongoose
