@@ -93,18 +93,14 @@ describe('tree tests', function() {
   });
 
   describe('removing document', function() {
-
     it('should remove leaf nodes', function(done) {
-
       User.findOne({name: 'Emily'}, function(err, emily) {
-
         emily.remove(function(err) {
-
           should.not.exist(err);
 
           User.find(function(err, users) {
-
             should.not.exist(err);
+
             users.length.should.equal(5);
             _.map(users, 'name').should.not.include('Emily');
             done();
@@ -114,17 +110,13 @@ describe('tree tests', function() {
     });
 
     it('should remove all children', function(done) {
-
       User.findOne({name: 'Carol'}, function(err, user) {
-
         should.not.exist(err);
 
         user.remove(function(err) {
-
           should.not.exist(err);
 
           User.find(function(err, users) {
-
             should.not.exist(err);
 
             users.length.should.equal(3);
@@ -138,20 +130,18 @@ describe('tree tests', function() {
 
   function checkPaths(done) {
     User.find({}, function(err, users) {
-
       should.not.exist(err);
 
       var ids = {};
       users.forEach(function(user) {
-
         ids[user._id] = user;
       });
 
       users.forEach(function(user) {
-
         if (!user.parent) {
           return;
         }
+
         should.exist(ids[user.parent]);
         user.path.should.equal(ids[user.parent].path + '.' + user._id);
       });
@@ -161,9 +151,7 @@ describe('tree tests', function() {
   }
 
   describe('moving documents', function() {
-
     it('should change children paths', function(done) {
-
       User.find({}, function(err, users) {
         should.not.exist(err);
 
@@ -186,9 +174,7 @@ describe('tree tests', function() {
   });
 
   describe('get children', function() {
-
     it('should return immediate children with filters', function(done) {
-
       User.findOne({name: 'Adam'}, function(err, adam) {
 
         should.not.exist(err);
@@ -203,13 +189,10 @@ describe('tree tests', function() {
     });
 
     it('should return immediate children', function(done) {
-
       User.findOne({name: 'Adam'}, function(err, adam) {
-
         should.not.exist(err);
 
         adam.getChildren(function(err, users) {
-
           should.not.exist(err);
 
           users.length.should.equal(2);
@@ -220,13 +203,10 @@ describe('tree tests', function() {
     });
 
     it('should return recursive children', function(done) {
-
       User.findOne({'name': 'Carol'}, function(err, carol) {
-
         should.not.exist(err);
 
         carol.getChildren(true, function(err, users) {
-
           should.not.exist(err);
 
           users.length.should.equal(2);
@@ -237,7 +217,6 @@ describe('tree tests', function() {
     });
 
     it('should return children with only name and _id fields', function(done) {
-
       User.findOne({'name': 'Carol'}, function(err, carol) {
         should.not.exist(err);
 
@@ -259,7 +238,6 @@ describe('tree tests', function() {
 
         carol.getChildren({}, null, {sort: {name: -1}}, true,
             function(err, users) {
-
               should.not.exist(err);
 
               users.length.should.equal(2);
@@ -288,8 +266,8 @@ describe('tree tests', function() {
     it('should return ancestors', function(done) {
       User.findOne({'name': 'Dann'}, function(err, dann) {
         dann.getAncestors(function(err, ancestors) {
-
           should.not.exist(err);
+          
           ancestors.length.should.equal(2);
           _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
           done();
