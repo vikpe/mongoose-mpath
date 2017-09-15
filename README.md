@@ -190,13 +190,6 @@ carol.level; // equals 3
 ```
 
 # Tests
-
-To run the tests install mocha
-
-    npm install mocha -g
-
-and then run
-
-    mocha
-
-
+```
+npm run test
+```
