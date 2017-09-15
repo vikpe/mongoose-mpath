@@ -1,14 +1,18 @@
-var Mongoose = require('mongoose');
-var Tree     = require('../lib/tree');
-var Async    = require('async');
-var should   = require('should');
-var _        = require('lodash');
-var shortId  = require('shortid');
+var Mongoose     = require('mongoose');
+Mongoose.Promise = global.Promise;
+
+var Tree    = require('../lib/tree');
+var Async   = require('async');
+var should  = require('should');
+var _       = require('lodash');
+var shortId = require('shortid');
 
 var Schema = Mongoose.Schema;
 
-Mongoose.connect(process.env.MONGODB_URI ||
-    'mongodb://localhost:27017/mongoose-path-tree');
+var connectOptions = {useMongoClient: true};
+var mongodbUri     = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongoose-path-tree';
+
+Mongoose.connect(mongodbUri, connectOptions);
 
 describe('tree tests', function() {
 
@@ -44,17 +48,16 @@ describe('tree tests', function() {
 
       should.not.exist(err);
 
-      var adam = new User({name: 'Adam'});
-      var eden = new User({name: 'Eden'});
-      var bob = new User({name: 'Bob', parent: adam});
+      var adam  = new User({name: 'Adam'});
+      var eden  = new User({name: 'Eden'});
+      var bob   = new User({name: 'Bob', parent: adam});
       var carol = new User({name: 'Carol', parent: adam});
-      var dann = new User({name: 'Dann', parent: carol});
+      var dann  = new User({name: 'Dann', parent: carol});
       var emily = new User({name: 'Emily', parent: dann});
 
       Async.forEachSeries([adam, bob, carol, dann, emily, eden],
-          function(doc, cb) {
-
-            doc.save(cb);
+          function(doc, callback) {
+            doc.save(callback);
           }, done);
     });
   });
@@ -74,18 +77,18 @@ describe('tree tests', function() {
         });
 
         should.not.exist(names['Adam'].parent);
-        names['Bob'].parent.toString()
-            .should
-            .equal(names['Adam']._id.toString());
-        names['Carol'].parent.toString()
-            .should
-            .equal(names['Adam']._id.toString());
-        names['Dann'].parent.toString()
-            .should
-            .equal(names['Carol']._id.toString());
-        names['Emily'].parent.toString()
-            .should
-            .equal(names['Dann']._id.toString());
+        names['Bob'].parent.toString().
+            should.
+            equal(names['Adam']._id.toString());
+        names['Carol'].parent.toString().
+            should.
+            equal(names['Adam']._id.toString());
+        names['Dann'].parent.toString().
+            should.
+            equal(names['Carol']._id.toString());
+        names['Emily'].parent.toString().
+            should.
+            equal(names['Dann']._id.toString());
 
         var expectedPath = [
           names['Adam']._id, names['Carol']._id,
@@ -111,7 +114,7 @@ describe('tree tests', function() {
 
             should.not.exist(err);
             users.length.should.equal(5);
-            _.pluck(users, 'name').should.not.include('Emily');
+            _.map(users, 'name').should.not.include('Emily');
             done();
           });
         });
@@ -133,7 +136,7 @@ describe('tree tests', function() {
             should.not.exist(err);
 
             users.length.should.equal(3);
-            _.pluck(users, 'name').should.include('Adam').and.include('Bob');
+            _.map(users, 'name').should.include('Adam').and.include('Bob');
             done();
           });
         });
@@ -174,7 +177,6 @@ describe('tree tests', function() {
 
         var names = {};
         users.forEach(function(user) {
-
           names[user.name] = user;
         });
 
@@ -202,7 +204,7 @@ describe('tree tests', function() {
 
           should.not.exist(err);
           users.length.should.equal(1);
-          _.pluck(users, 'name').should.include('Bob');
+          _.map(users, 'name').should.include('Bob');
           done();
         });
       });
@@ -219,7 +221,7 @@ describe('tree tests', function() {
           should.not.exist(err);
 
           users.length.should.equal(2);
-          _.pluck(users, 'name').should.include('Bob').and.include('Carol');
+          _.map(users, 'name').should.include('Bob').and.include('Carol');
           done();
         });
       });
@@ -236,7 +238,7 @@ describe('tree tests', function() {
           should.not.exist(err);
 
           users.length.should.equal(2);
-          _.pluck(users, 'name').should.include('Dann').and.include('Emily');
+          _.map(users, 'name').should.include('Dann').and.include('Emily');
           done();
         });
       });
@@ -254,7 +256,7 @@ describe('tree tests', function() {
 
           users.length.should.equal(2);
           users[0].should.not.have.property('parent');
-          _.pluck(users, 'name').should.include('Dann').and.include('Emily');
+          _.map(users, 'name').should.include('Dann').and.include('Emily');
           done();
         });
       });
@@ -273,11 +275,11 @@ describe('tree tests', function() {
 
               users.length.should.equal(2);
               users[0].name.should.equal('Emily');
-              _.pluck(users, 'name')
-                  .should
-                  .include('Dann')
-                  .and
-                  .include('Emily');
+              _.map(users, 'name').
+                  should.
+                  include('Dann').
+                  and.
+                  include('Emily');
               done();
             });
       });
@@ -308,11 +310,11 @@ describe('tree tests', function() {
 
           should.not.exist(err);
           ancestors.length.should.equal(2);
-          _.pluck(ancestors, 'name')
-              .should
-              .include('Carol')
-              .and
-              .include('Adam');
+          _.map(ancestors, 'name').
+              should.
+              include('Carol').
+              and.
+              include('Adam');
           done();
         });
       });
@@ -328,11 +330,11 @@ describe('tree tests', function() {
           ancestors.length.should.equal(2);
           ancestors[0].should.not.have.property('parent');
           ancestors[0].should.have.property('name');
-          _.pluck(ancestors, 'name')
-              .should
-              .include('Carol')
-              .and
-              .include('Adam');
+          _.map(ancestors, 'name').
+              should.
+              include('Carol').
+              and.
+              include('Adam');
           done();
         });
       });
@@ -350,11 +352,11 @@ describe('tree tests', function() {
                   ancestors.length.should.equal(2);
                   ancestors[0].name.should.equal('Carol');
                   should.not.exist(ancestors[0].getAncestors);
-                  _.pluck(ancestors, 'name')
-                      .should
-                      .include('Carol')
-                      .and
-                      .include('Adam');
+                  _.map(ancestors, 'name').
+                      should.
+                      include('Carol').
+                      and.
+                      include('Adam');
                   done();
                 });
           });
@@ -371,19 +373,19 @@ describe('tree tests', function() {
         childrenTree.length.should.equal(2);
 
         var adamTree = _.find(childrenTree,
-            function(x) { return x.name == 'Adam';});
+            function(x) { return x.name === 'Adam';});
         var edenTree = _.find(childrenTree,
-            function(x) { return x.name == 'Eden';});
+            function(x) { return x.name === 'Eden';});
 
         var bobTree = _.find(adamTree.children,
-            function(x) { return x.name == 'Bob';});
+            function(x) { return x.name === 'Bob';});
 
         var carolTree = _.find(adamTree.children,
-            function(x) { return x.name == 'Carol';});
+            function(x) { return x.name === 'Carol';});
         var danTree   = _.find(carolTree.children,
-            function(x) { return x.name == 'Dann';});
+            function(x) { return x.name === 'Dann';});
         var emilyTree = _.find(danTree.children,
-            function(x) { return x.name == 'Emily';});
+            function(x) { return x.name === 'Emily';});
 
         adamTree.children.length.should.equal(2);
         edenTree.children.length.should.equal(0);
@@ -409,14 +411,14 @@ describe('tree tests', function() {
           should.not.exist(err);
 
           var bobTree = _.find(childrenTree,
-              function(x) { return x.name == 'Bob';});
+              function(x) { return x.name === 'Bob';});
 
           var carolTree = _.find(childrenTree,
-              function(x) { return x.name == 'Carol';});
+              function(x) { return x.name === 'Carol';});
           var danTree   = _.find(carolTree.children,
-              function(x) { return x.name == 'Dann';});
+              function(x) { return x.name === 'Dann';});
           var emilyTree = _.find(danTree.children,
-              function(x) { return x.name == 'Emily';});
+              function(x) { return x.name === 'Emily';});
 
           bobTree.children.length.should.equal(0);
           carolTree.children.length.should.equal(1);
