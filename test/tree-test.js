@@ -3,7 +3,7 @@ Mongoose.Promise = global.Promise;
 
 var Tree    = require('../lib/tree');
 var Async   = require('async');
-var should  = require('should');
+var should  = require('chai').should();
 var _       = require('lodash');
 var shortId = require('shortid');
 
@@ -77,18 +77,10 @@ describe('tree tests', function() {
         });
 
         should.not.exist(names['Adam'].parent);
-        names['Bob'].parent.toString().
-            should.
-            equal(names['Adam']._id.toString());
-        names['Carol'].parent.toString().
-            should.
-            equal(names['Adam']._id.toString());
-        names['Dann'].parent.toString().
-            should.
-            equal(names['Carol']._id.toString());
-        names['Emily'].parent.toString().
-            should.
-            equal(names['Dann']._id.toString());
+        names['Bob'].parent.toString().should.equal(names['Adam']._id.toString());
+        names['Carol'].parent.toString().should.equal(names['Adam']._id.toString());
+        names['Dann'].parent.toString().should.equal(names['Carol']._id.toString());
+        names['Emily'].parent.toString().should.equal(names['Dann']._id.toString());
 
         var expectedPath = [
           names['Adam']._id, names['Carol']._id,
@@ -275,11 +267,13 @@ describe('tree tests', function() {
 
               users.length.should.equal(2);
               users[0].name.should.equal('Emily');
-              _.map(users, 'name').
-                  should.
-                  include('Dann').
-                  and.
-                  include('Emily');
+
+              _.map(names)
+                  .should
+                  .include('Dann')
+                  .and
+                  .include('Emily');
+
               done();
             });
       });
@@ -310,11 +304,7 @@ describe('tree tests', function() {
 
           should.not.exist(err);
           ancestors.length.should.equal(2);
-          _.map(ancestors, 'name').
-              should.
-              include('Carol').
-              and.
-              include('Adam');
+          _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
           done();
         });
       });
@@ -330,11 +320,7 @@ describe('tree tests', function() {
           ancestors.length.should.equal(2);
           ancestors[0].should.not.have.property('parent');
           ancestors[0].should.have.property('name');
-          _.map(ancestors, 'name').
-              should.
-              include('Carol').
-              and.
-              include('Adam');
+          _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
           done();
         });
       });
@@ -352,11 +338,7 @@ describe('tree tests', function() {
                   ancestors.length.should.equal(2);
                   ancestors[0].name.should.equal('Carol');
                   should.not.exist(ancestors[0].getAncestors);
-                  _.map(ancestors, 'name').
-                      should.
-                      include('Carol').
-                      and.
-                      include('Adam');
+                  _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
                   done();
                 });
           });
