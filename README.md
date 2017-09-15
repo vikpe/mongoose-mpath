@@ -1,11 +1,14 @@
 ## mongoose-path-tree
-[![Build Status](https://travis-ci.org/vikpe/mongoose-materialized-path.png)](https://travis-ci.org/vikpe/mongoose-materialized-path)
+[![Build Status](https://travis-ci.org/vikpe/mongoose-materialized-path.svg)](https://travis-ci.org/vikpe/mongoose-materialized-path)
 
 Implements the materialized path strategy with cascade child re-parenting on delete for storing a hierarchy of documents with mongoose
+
 Version with all collected features and fixes from mongoose-tree, mongoose-tree-fix, mongoose-tree2, mongoose-reparenting-tree
 
 # Installation
-```npm install mongoose-path-tree```
+```
+npm install mongoose-path-tree
+```
 
 # Usage
 ```javascript
@@ -17,7 +20,7 @@ Model.plugin(tree, {
 })
 ```
 
-# Example
+## Example
 ```javascript
 var tree = require('mongoose-path-tree');
 
