@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/vikpe/mongoose-materialized-path",
   "scripts": {
-    "test": "MONGOOSE_TREE_SHORTID=1 ./node_modules/.bin/mocha && MONGOOSE_TREE_SHORTID=0 ./node_modules/.bin/mocha"
+    "test": "mocha"
   },
   "main": "index.js",
   "dependencies": {},
