@@ -20,13 +20,14 @@
   },
   "homepage": "https://github.com/vikpe/mongoose-materialized-path",
   "scripts": {
-    "test": "mocha"
+    "test": "cross-env MONGOOSE_TREE_SHORTID=1 mocha && cross-env MONGOOSE_TREE_SHORTID=0 mocha"
   },
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
     "async": "^2.5.0",
     "chai": "^4.1.2",
+    "cross-env": "^5.0.5",
     "lodash": "^4.17.4",
     "mocha": "^3.5.3",
     "mongoose": "^4.11.11",
