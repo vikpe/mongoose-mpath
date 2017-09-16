@@ -29,24 +29,24 @@ describe('tree tests', function() {
   var Location = Mongoose.model('Location', LocationSchema);
 
   // Sample locations
+  var africa;
   var europe;
   var sweden;
   var stockholm;
   var globe;
   var norway;
-  var africa;
 
   // Set up the fixture
   beforeEach(function(done) {
     Location.remove({}, function(err) {
       should.not.exist(err);
 
+      africa    = new Location({_id: 'af', name: 'Africa'});
       europe    = new Location({_id: 'eu', name: 'Europe'});
       sweden    = new Location({_id: 'se', name: 'Sweden', parent: europe});
       stockholm = new Location({_id: 'sthlm', name: 'Stockholm', parent: sweden});
       globe     = new Location({_id: 'globe', name: 'Globe', parent: stockholm});
       norway    = new Location({_id: 'no', name: 'Norway', parent: europe});
-      africa    = new Location({_id: 'af', name: 'Africa'});
 
       Async.forEachSeries(
           [europe, sweden, stockholm, globe, norway, africa],
@@ -105,51 +105,52 @@ describe('tree tests', function() {
 
   describe('removing document', function() {
     it('should remove leaf nodes', function(done) {
-      Location.findOne({name: 'Norway'}, function(err, location) {
-        location.remove(function(err) {
-          should.not.exist(err);
+      norway.remove(function() {
+        Location.find({}, function(error, locations) {
+          should.not.exist(error);
 
-          Location.find({}, function(err, locations) {
-            should.not.exist(err);
-
-            var pathObject = locationsToPathObject(locations);
-            pathObject.should.eql({
-              'Africa': 'af',
-              'Europe': 'eu',
-              'Sweden': 'eu.se',
-              'Stockholm': 'eu.se.sthlm',
-              'Globe': 'eu.se.sthlm.globe',
-            });
-
-            done();
+          var pathObject = locationsToPathObject(locations);
+          pathObject.should.eql({
+            'Africa': 'af',
+            'Europe': 'eu',
+            'Sweden': 'eu.se',
+            'Stockholm': 'eu.se.sthlm',
+            'Globe': 'eu.se.sthlm.globe',
           });
+
+          done();
         });
       });
     });
 
     it('should remove nodes and reparent children', function(done) {
-      Location.findOne({name: 'Sweden'}, function(err, location) {
-        should.not.exist(err);
-
-        location.remove(function(err) {
+      sweden.remove(function() {
+        Location.find(function(err, locations) {
           should.not.exist(err);
 
-          Location.find(function(err, locations) {
-            should.not.exist(err);
-
-            var pathObject = locationsToPathObject(locations);
-            pathObject.should.eql({
-              'Africa': 'af',
-              'Europe': 'eu',
-              'Stockholm': 'eu.sthlm',
-              'Globe': 'eu.sthlm.globe',
-              'Norway': 'eu.no',
-            });
-
-            done();
+          var pathObject = locationsToPathObject(locations);
+          pathObject.should.eql({
+            'Africa': 'af',
+            'Europe': 'eu',
+            'Stockholm': 'eu.sthlm',
+            'Globe': 'eu.sthlm.globe',
+            'Norway': 'eu.no',
           });
+
+          done();
         });
       });
+    });
+  });
+
+  describe('level virtual', function() {
+    it('should equal the number of ancestors', function() {
+      africa.level.should.equal(1);
+      europe.level.should.equal(1);
+      sweden.level.should.equal(2);
+      stockholm.level.should.equal(3);
+      globe.level.should.equal(4);
+      norway.level.should.equal(2);
     });
   });
 
@@ -227,17 +228,6 @@ describe('tree tests', function() {
 
               done();
             });
-      });
-    });
-  });
-
-  describe('level virtual', function() {
-    it('should equal the number of ancestors', function(done) {
-      Location.findOne({'name': 'Dann'}, function(err, dann) {
-        should.not.exist(err);
-
-        dann.level.should.equal(3);
-        done();
       });
     });
   });
