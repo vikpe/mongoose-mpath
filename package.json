@@ -20,13 +20,15 @@
   },
   "homepage": "https://github.com/vikpe/mongoose-materialized-path",
   "scripts": {
-    "test": "cross-env MONGOOSE_TREE_SHORTID=1 nyc mocha"
+    "test": "cross-env MONGOOSE_TREE_SHORTID=1 nyc mocha",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
     "async": "^2.5.0",
     "chai": "^4.1.2",
+    "codecov": "^2.3.0",
     "cross-env": "^5.0.5",
     "lodash": "^4.17.4",
     "mocha": "^3.5.3",
