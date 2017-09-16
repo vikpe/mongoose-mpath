@@ -55,8 +55,8 @@ describe('tree tests', function() {
 
       Async.forEachSeries(
           [europe, sweden, stockholm, globe, norway, africa],
-          function(doc, callback) {
-            doc.save(callback);
+          function(doc, asyncDone) {
+            doc.save(asyncDone);
           },
           done
       );
@@ -216,7 +216,6 @@ describe('tree tests', function() {
       });
     });
   });
-  
   /*
   describe('get ancestors', function() {
 
