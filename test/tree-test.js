@@ -16,7 +16,7 @@ describe('tree tests', function() {
       return result;
     }, {});
   };
-  
+
   // Schema for tests
   var LocationSchema = new Schema({_id: String, name: String,});
   var pluginOptions  = {
@@ -32,6 +32,7 @@ describe('tree tests', function() {
   var europe;
   var sweden;
   var stockholm;
+  var globe;
   var norway;
   var africa;
 
@@ -43,11 +44,12 @@ describe('tree tests', function() {
       europe    = new Location({_id: 'eu', name: 'Europe'});
       sweden    = new Location({_id: 'se', name: 'Sweden', parent: europe});
       stockholm = new Location({_id: 'sthlm', name: 'Stockholm', parent: sweden});
+      globe     = new Location({_id: 'globe', name: 'Globe', parent: stockholm});
       norway    = new Location({_id: 'no', name: 'Norway', parent: europe});
       africa    = new Location({_id: 'af', name: 'Africa'});
 
       Async.forEachSeries(
-          [europe, sweden, stockholm, norway, africa],
+          [europe, sweden, stockholm, globe, norway, africa],
           function(doc, callback) {
             doc.save(callback);
           },
@@ -60,9 +62,9 @@ describe('tree tests', function() {
     it('should set parent', function() {
       should.not.exist(africa.parent);
       should.not.exist(europe.parent);
-
       sweden.parent.should.equal(europe._id);
       stockholm.parent.should.equal(sweden._id);
+      globe.parent.should.equal(stockholm._id);
       norway.parent.should.equal(europe._id);
     });
 
@@ -71,6 +73,7 @@ describe('tree tests', function() {
       europe.path.should.equal('eu');
       sweden.path.should.equal('eu.se');
       stockholm.path.should.equal('eu.se.sthlm');
+      globe.path.should.equal('eu.se.sthlm.globe');
       norway.path.should.equal('eu.no');
     });
   });
@@ -90,6 +93,7 @@ describe('tree tests', function() {
             'Europe': 'eu',
             'Sweden': 'af.se',
             'Stockholm': 'af.se.sthlm',
+            'Globe': 'af.se.sthlm.globe',
             'Norway': 'eu.no',
           });
 
@@ -114,6 +118,7 @@ describe('tree tests', function() {
               'Europe': 'eu',
               'Sweden': 'eu.se',
               'Stockholm': 'eu.se.sthlm',
+              'Globe': 'eu.se.sthlm.globe',
             });
 
             done();
@@ -122,7 +127,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should reparent children', function(done) {
+    it('should remove nodes and reparent children', function(done) {
       Location.findOne({name: 'Sweden'}, function(err, location) {
         should.not.exist(err);
 
@@ -137,6 +142,7 @@ describe('tree tests', function() {
               'Africa': 'af',
               'Europe': 'eu',
               'Stockholm': 'eu.sthlm',
+              'Globe': 'eu.sthlm.globe',
               'Norway': 'eu.no',
             });
 
