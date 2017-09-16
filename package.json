@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/vikpe/mongoose-materialized-path",
   "scripts": {
-    "test": "cross-env MONGOOSE_TREE_SHORTID=1 nyc mocha",
+    "test": "cross-env nyc mocha",
+    "test:watch": "cross-env nyc mocha -w",
     "coverage": "nyc report --reporter=text-lcov > coverage/lcov.info"
   },
   "main": "index.js",
