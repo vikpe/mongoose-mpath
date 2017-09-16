@@ -217,7 +217,7 @@ describe('plugin', function() {
       });
     });
 
-    it('using options (sorted)', function(done) {
+    it('using options (sort)', function(done) {
       var conditions = {};
       var fields     = '_id';
       var options    = {
@@ -282,7 +282,7 @@ describe('plugin', function() {
       });
     });
 
-    it('using options (sorted)', function(done) {
+    it('using options (sort)', function(done) {
       var conditions = {};
       var fields     = '_id';
       var options    = {
