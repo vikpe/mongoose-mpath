@@ -6,7 +6,7 @@ var Tree     = require('../lib/tree');
 
 mongoose.Promise = global.Promise;
 
-describe('tree tests', function() {
+describe('mongoose materialized path plugin', function() {
   // Utils
   var locationsToPathObject = function(locations) {
     return locations.reduce(function(result, location) {
@@ -74,7 +74,7 @@ describe('tree tests', function() {
     dbConnection.close();
   });
 
-  describe('creating documents', function() {
+  describe('pre save middleware', function() {
     it('should set parent', function() {
       should.not.exist(africa.parent);
       should.not.exist(europe.parent);
@@ -92,10 +92,8 @@ describe('tree tests', function() {
       stockholm.path.should.equal('eu.se.sthlm');
       globe.path.should.equal('eu.se.sthlm.globe');
     });
-  });
 
-  describe('updating documents', function() {
-    it('should change child paths', function(done) {
+    it('should update child paths', function(done) {
       sweden.parent = africa;
       sweden.save(function(error) {
         should.not.exist(error);
@@ -119,7 +117,7 @@ describe('tree tests', function() {
     });
   });
 
-  describe('removing document', function() {
+  describe('pre remove middleware', function() {
     it('should remove leaf nodes', function(done) {
       norway.remove(function() {
         Location.find({}, function(error, locations) {
@@ -139,7 +137,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should remove nodes and reparent children', function(done) {
+    it('should reparent children', function(done) {
       sweden.remove(function() {
         Location.find(function(err, locations) {
           should.not.exist(err);
@@ -159,7 +157,7 @@ describe('tree tests', function() {
     });
   });
 
-  describe('level virtual', function() {
+  describe('virtual field "level"', function() {
     it('should equal the number of ancestors', function() {
       africa.level.should.equal(1);
       europe.level.should.equal(1);
@@ -170,9 +168,8 @@ describe('tree tests', function() {
     });
   });
 
-  describe('get immediate children', function() {
-
-    it('should return children', function(done) {
+  describe('getImmidiateChildren()', function() {
+    it('using default params', function(done) {
       var conditions = {};
       var fields     = null;
       var options    = {};
@@ -184,7 +181,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return children with conditions (object)', function(done) {
+    it('using conditions (object)', function(done) {
       var conditions = {name: 'Norway'};
       var fields     = null;
       var options    = {};
@@ -196,7 +193,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return children with conditions ($query)', function(done) {
+    it('using conditions ($query)', function(done) {
       var conditions = {$query: {name: 'Norway'}};
       var fields     = null;
       var options    = {};
@@ -208,7 +205,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return children with fields', function(done) {
+    it('using fields', function(done) {
       var conditions = {};
       var fields     = '_id';
       var options    = {lean: true};
@@ -220,7 +217,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return children with options (sorted)', function(done) {
+    it('using options (sorted)', function(done) {
       var conditions = {};
       var fields     = '_id';
       var options    = {
@@ -236,46 +233,47 @@ describe('tree tests', function() {
     });
   });
 
-  it('get parent', function(done) {
-    var fields  = 'name';
-    var options = {lean: true};
+  describe('getParent()', function() {
+    it('should get the parent', function(done) {
+      var fields  = 'name';
+      var options = {lean: true};
 
-    var expectedParents = [
-      [europe, null],
-      [norway, {_id: 'eu', name: 'Europe'}],
-      [sweden, {_id: 'eu', name: 'Europe'}],
-      [stockholm, {_id: 'se', name: 'Sweden'}],
-      [globe, {_id: 'sthlm', name: 'Stockholm'}],
-      [africa, null]
-    ];
+      var expectedParents = [
+        [europe, null],
+        [norway, {_id: 'eu', name: 'Europe'}],
+        [sweden, {_id: 'eu', name: 'Europe'}],
+        [stockholm, {_id: 'se', name: 'Sweden'}],
+        [globe, {_id: 'sthlm', name: 'Stockholm'}],
+        [africa, null]
+      ];
 
-    Async.forEachSeries(
-        expectedParents,
-        function(arr, asyncDone) {
-          var child          = arr[0];
-          var expectedParent = arr[1];
+      Async.forEachSeries(
+          expectedParents,
+          function(arr, asyncDone) {
+            var child          = arr[0];
+            var expectedParent = arr[1];
 
-          child
-              .getParent(fields, options, function(error, parent) {
-                if (null === expectedParent) {
-                  should.not.exist(parent);
-                }
-                else {
-                  parent.should.eql(expectedParent);
-                }
+            child
+                .getParent(fields, options, function(error, parent) {
+                  if (null === expectedParent) {
+                    should.not.exist(parent);
+                  }
+                  else {
+                    parent.should.eql(expectedParent);
+                  }
 
-              })
-              .then(function() {
-                asyncDone();
-              });
-        },
-        done
-    );
+                })
+                .then(function() {
+                  asyncDone();
+                });
+          },
+          done
+      );
+    });
   });
 
-  describe('get ancenstors', function() {
-
-    it('should return ancenstors', function(done) {
+  describe('getAncestors()', function() {
+    it('using default params', function(done) {
       var conditions = {};
       var fields     = null;
       var options    = {};
@@ -287,7 +285,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return ancenstors with conditions (plain object)', function(done) {
+    it('using conditions (plain object)', function(done) {
       var conditions = {name: 'Europe'};
       var fields     = null;
       var options    = {};
@@ -299,7 +297,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return ancenstors with conditions ($query)', function(done) {
+    it('using conditions ($query)', function(done) {
       var conditions = {$query: {name: 'Europe'}};
       var fields     = null;
       var options    = {};
@@ -311,7 +309,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return ancenstors with fields', function(done) {
+    it('using fields', function(done) {
       var conditions = {};
       var fields     = '_id';
       var options    = {lean: true};
@@ -323,7 +321,7 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return ancenstors with options (sorted)', function(done) {
+    it('using options (sort)', function(done) {
       var conditions = {};
       var fields     = '_id';
       var options    = {
