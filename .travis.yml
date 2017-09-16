@@ -3,6 +3,7 @@ services: mongodb
 node_js:
   - "6"
 cache:
+  timeout: 3600
   directories:
   - node_modules
 env:
