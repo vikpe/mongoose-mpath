@@ -15,18 +15,16 @@ describe('tree tests', function() {
     }, {});
   };
 
-  // Variables
-  var pluginOptions = {
+  // Mongoose
+  var dbConnection;
+  var Location;
+  var LocationSchema = new mongoose.Schema({_id: String, name: String});
+
+  LocationSchema.plugin(Tree, {
     idType: String,
     pathSeparator: '.',
     onDelete: 'REPARENT'
-  };
-
-  var Location;
-  var LocationSchema = new mongoose.Schema({_id: String, name: String});
-  LocationSchema.plugin(Tree, pluginOptions);
-
-  var dbConnection;
+  });
 
   // Sample locations
   var africa;
@@ -42,7 +40,7 @@ describe('tree tests', function() {
     dbConnection = mongoose.createConnection('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
     Location     = dbConnection.model('Location', LocationSchema);
 
-    // Schema for tests
+    // Create locations
     Location.remove({}, function(err) {
       should.not.exist(err);
 
@@ -236,16 +234,19 @@ describe('tree tests', function() {
           var child          = arr[0];
           var expectedParent = arr[1];
 
-          child.getParent(fields, options, function(error, parent) {
-            if (null === expectedParent) {
-              should.not.exist(parent);
-            }
-            else {
-              parent.should.eql(expectedParent);
-            }
+          child
+              .getParent(fields, options, function(error, parent) {
+                if (null === expectedParent) {
+                  should.not.exist(parent);
+                }
+                else {
+                  parent.should.eql(expectedParent);
+                }
 
-            asyncDone();
-          });
+              })
+              .then(function() {
+                asyncDone();
+              });
         },
         done
     );
