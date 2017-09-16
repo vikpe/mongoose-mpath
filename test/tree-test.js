@@ -1,7 +1,6 @@
 var Mongoose = require('mongoose');
 var _        = require('lodash');
 var Async    = require('async');
-var shortId  = require('shortid');
 var should   = require('chai').should();
 var Tree     = require('../lib/tree');
 
@@ -10,46 +9,45 @@ Mongoose.Promise = global.Promise;
 Mongoose.connect('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
 
 describe('tree tests', function() {
-  var userSchema = {
-    name: String,
+  // Utils
+  var locationsToPathObject = function(locations) {
+    return locations.reduce(function(result, location) {
+      result[location.name] = location.path;
+      return result;
+    }, {});
   };
-
-  var pluginOptions = {
+  
+  // Schema for tests
+  var LocationSchema = new Schema({_id: String, name: String,});
+  var pluginOptions  = {
+    idType: String,
     pathSeparator: '.',
     onDelete: 'REPARENT',
   };
 
-  if ('1' === process.env.MONGOOSE_TREE_SHORTID) {
-    userSchema._id = {
-      type: String,
-      unique: true,
-      'default': function() {
-        return shortId.generate();
-      },
-    };
+  LocationSchema.plugin(Tree, pluginOptions);
+  var Location = Mongoose.model('Location', LocationSchema);
 
-    pluginOptions.idType = String;
-  }
-
-  // Schema for tests
-  var UserSchema = new Schema(userSchema);
-  UserSchema.plugin(Tree, pluginOptions);
-  var User = Mongoose.model('User', UserSchema);
+  // Sample locations
+  var europe;
+  var sweden;
+  var stockholm;
+  var norway;
+  var africa;
 
   // Set up the fixture
   beforeEach(function(done) {
-    User.remove({}, function(err) {
+    Location.remove({}, function(err) {
       should.not.exist(err);
 
-      var adam  = new User({name: 'Adam'});
-      var bob   = new User({name: 'Bob', parent: adam});
-      var carol = new User({name: 'Carol', parent: adam});
-      var dann  = new User({name: 'Dann', parent: carol});
-      var emily = new User({name: 'Emily', parent: dann});
-      var frank  = new User({name: 'Frank'});
+      europe    = new Location({_id: 'eu', name: 'Europe'});
+      sweden    = new Location({_id: 'se', name: 'Sweden', parent: europe});
+      stockholm = new Location({_id: 'sthlm', name: 'Stockholm', parent: sweden});
+      norway    = new Location({_id: 'no', name: 'Norway', parent: europe});
+      africa    = new Location({_id: 'af', name: 'Africa'});
 
       Async.forEachSeries(
-          [adam, bob, carol, dann, emily, frank],
+          [europe, sweden, stockholm, norway, africa],
           function(doc, callback) {
             doc.save(callback);
           },
@@ -58,64 +56,90 @@ describe('tree tests', function() {
     });
   });
 
-  describe('saving documents', function() {
-    it('should set parent id and path', function(done) {
-      User.find({}, function(err, users) {
-        should.not.exist(err);
+  describe('creating documents', function() {
+    it('should set parent', function() {
+      should.not.exist(africa.parent);
+      should.not.exist(europe.parent);
 
-        var userPerName = {};
-        users.forEach(function(user) {
-          userPerName[user.name] = user;
+      sweden.parent.should.equal(europe._id);
+      stockholm.parent.should.equal(sweden._id);
+      norway.parent.should.equal(europe._id);
+    });
+
+    it('should set path', function() {
+      africa.path.should.equal('af');
+      europe.path.should.equal('eu');
+      sweden.path.should.equal('eu.se');
+      stockholm.path.should.equal('eu.se.sthlm');
+      norway.path.should.equal('eu.no');
+    });
+  });
+
+  describe('updating documents', function() {
+    it('should change child paths', function(done) {
+      sweden.parent = africa;
+      sweden.save(function(error) {
+        should.not.exist(error);
+
+        Location.find({}, function(error, locations) {
+          should.not.exist(error);
+
+          var pathObject = locationsToPathObject(locations);
+          pathObject.should.eql({
+            'Africa': 'af',
+            'Europe': 'eu',
+            'Sweden': 'af.se',
+            'Stockholm': 'af.se.sthlm',
+            'Norway': 'eu.no',
+          });
+
+          done();
         });
-
-        should.not.exist(userPerName['Adam'].parent);
-        userPerName['Bob'].parent.toString().should.equal(userPerName['Adam']._id.toString());
-        userPerName['Carol'].parent.toString().should.equal(userPerName['Adam']._id.toString());
-        userPerName['Dann'].parent.toString().should.equal(userPerName['Carol']._id.toString());
-        userPerName['Emily'].parent.toString().should.equal(userPerName['Dann']._id.toString());
-
-        var expectedPath = [
-          userPerName['Adam']._id,
-          userPerName['Carol']._id,
-          userPerName['Dann']._id,
-        ].join('.');
-
-        userPerName['Dann'].path.should.equal(expectedPath);
-
-        done();
       });
     });
   });
 
-  describe.only('removing document', function() {
+  describe('removing document', function() {
     it('should remove leaf nodes', function(done) {
-      User.findOne({name: 'Emily'}, function(err, emily) {
-        emily.remove(function(err) {
+      Location.findOne({name: 'Norway'}, function(err, location) {
+        location.remove(function(err) {
           should.not.exist(err);
 
-          User.find(function(err, users) {
+          Location.find({}, function(err, locations) {
             should.not.exist(err);
 
-            users.length.should.equal(5);
-            _.map(users, 'name').should.not.include('Emily');
+            var pathObject = locationsToPathObject(locations);
+            pathObject.should.eql({
+              'Africa': 'af',
+              'Europe': 'eu',
+              'Sweden': 'eu.se',
+              'Stockholm': 'eu.se.sthlm',
+            });
+
             done();
           });
         });
       });
     });
 
-    it('should remove all children', function(done) {
-      User.findOne({name: 'Carol'}, function(err, user) {
+    it('should reparent children', function(done) {
+      Location.findOne({name: 'Sweden'}, function(err, location) {
         should.not.exist(err);
 
-        user.remove(function(err) {
+        location.remove(function(err) {
           should.not.exist(err);
 
-          User.find(function(err, users) {
+          Location.find(function(err, locations) {
             should.not.exist(err);
 
-            users.length.should.equal(3);
-            _.map(users, 'name').should.include('Adam').and.include('Bob');
+            var pathObject = locationsToPathObject(locations);
+            pathObject.should.eql({
+              'Africa': 'af',
+              'Europe': 'eu',
+              'Stockholm': 'eu.sthlm',
+              'Norway': 'eu.no',
+            });
+
             done();
           });
         });
@@ -123,53 +147,10 @@ describe('tree tests', function() {
     });
   });
 
-  function checkPaths(done) {
-    User.find({}, function(err, users) {
-      should.not.exist(err);
-
-      var userPerId = {};
-      users.forEach(function(user) {
-        userPerId[user._id] = user;
-      });
-
-      users.forEach(function(user) {
-        if (!user.parent) {
-          return;
-        }
-
-        should.exist(userPerId[user.parent]);
-        user.path.should.equal(userPerId[user.parent].path + '.' + user._id);
-      });
-
-      done();
-    });
-  }
-
-  describe('moving documents', function() {
-    it('should change children paths', function(done) {
-      User.find({}, function(err, users) {
-        should.not.exist(err);
-
-        var names = {};
-        users.forEach(function(user) {
-          names[user.name] = user;
-        });
-
-        var carol = names['Carol'];
-        var bob   = names['Bob'];
-
-        carol.parent = bob;
-        carol.save(function(err) {
-          should.not.exist(err);
-          checkPaths(done);
-        });
-      });
-    });
-  });
-
+  /*
   describe('get children', function() {
     it('should return immediate children with filters', function(done) {
-      User.findOne({name: 'Adam'}, function(err, adam) {
+      Location.findOne({name: 'Adam'}, function(err, adam) {
         should.not.exist(err);
 
         adam.getChildren({name: 'Bob'}, function(err, users) {
@@ -183,7 +164,7 @@ describe('tree tests', function() {
     });
 
     it('should return immediate children', function(done) {
-      User.findOne({name: 'Adam'}, function(err, adam) {
+      Location.findOne({name: 'Adam'}, function(err, adam) {
         should.not.exist(err);
 
         adam.getChildren(function(err, users) {
@@ -197,7 +178,7 @@ describe('tree tests', function() {
     });
 
     it('should return recursive children', function(done) {
-      User.findOne({'name': 'Carol'}, function(err, carol) {
+      Location.findOne({'name': 'Carol'}, function(err, carol) {
         should.not.exist(err);
 
         carol.getChildren(true, function(err, users) {
@@ -211,7 +192,7 @@ describe('tree tests', function() {
     });
 
     it('should return children with only name and _id fields', function(done) {
-      User.findOne({'name': 'Carol'}, function(err, carol) {
+      Location.findOne({'name': 'Carol'}, function(err, carol) {
         should.not.exist(err);
 
         carol.getChildren({}, 'name', true, function(err, users) {
@@ -227,7 +208,7 @@ describe('tree tests', function() {
     });
 
     it('should return children sorted on name', function(done) {
-      User.findOne({'name': 'Carol'}, function(err, carol) {
+      Location.findOne({'name': 'Carol'}, function(err, carol) {
         should.not.exist(err);
 
         carol.getChildren({}, null, {sort: {name: -1}}, true,
@@ -246,7 +227,7 @@ describe('tree tests', function() {
 
   describe('level virtual', function() {
     it('should equal the number of ancestors', function(done) {
-      User.findOne({'name': 'Dann'}, function(err, dann) {
+      Location.findOne({'name': 'Dann'}, function(err, dann) {
         should.not.exist(err);
 
         dann.level.should.equal(3);
@@ -258,7 +239,7 @@ describe('tree tests', function() {
   describe('get ancestors', function() {
 
     it('should return ancestors', function(done) {
-      User.findOne({'name': 'Dann'}, function(err, dann) {
+      Location.findOne({'name': 'Dann'}, function(err, dann) {
         dann.getAncestors(function(err, ancestors) {
           should.not.exist(err);
 
@@ -270,7 +251,7 @@ describe('tree tests', function() {
     });
 
     it('should return ancestors with only name and _id fields', function(done) {
-      User.findOne({'name': 'Dann'}, function(err, dann) {
+      Location.findOne({'name': 'Dann'}, function(err, dann) {
         dann.getAncestors({}, 'name', function(err, ancestors) {
           should.not.exist(err);
 
@@ -285,7 +266,7 @@ describe('tree tests', function() {
 
     it('should return ancestors sorted on name and without wrappers',
         function(done) {
-          User.findOne({'name': 'Dann'}, function(err, dann) {
+          Location.findOne({'name': 'Dann'}, function(err, dann) {
             dann.getAncestors({}, null, {sort: {name: -1}, lean: 1},
                 function(err, ancestors) {
                   should.not.exist(err);
@@ -302,13 +283,13 @@ describe('tree tests', function() {
 
   describe('get children tree', function() {
     it('should return complete children tree', function(done) {
-      User.getChildrenTree(function(err, childrenTree) {
+      Location.getChildrenTree(function(err, childrenTree) {
         should.not.exist(err);
 
         childrenTree.length.should.equal(2);
 
         var adamTree  = _.find(childrenTree, function(x) { return x.name === 'Adam';});
-        var frankTree  = _.find(childrenTree, function(x) { return x.name === 'Frank';});
+        var frankTree = _.find(childrenTree, function(x) { return x.name === 'Frank';});
         var bobTree   = _.find(adamTree.children, function(x) { return x.name === 'Bob';});
         var carolTree = _.find(adamTree.children, function(x) { return x.name === 'Carol';});
         var danTree   = _.find(carolTree.children, function(x) { return x.name === 'Dann';});
@@ -330,7 +311,7 @@ describe('tree tests', function() {
     });
 
     it('should return adam\'s children tree', function(done) {
-      User.findOne({'name': 'Adam'}, function(err, adam) {
+      Location.findOne({'name': 'Adam'}, function(err, adam) {
         adam.getChildrenTree(function(err, childrenTree) {
           should.not.exist(err);
 
@@ -350,4 +331,5 @@ describe('tree tests', function() {
       });
     });
   });
+  */
 });
