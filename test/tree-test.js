@@ -184,8 +184,20 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return children with conditions', function(done) {
+    it('should return children with conditions (object)', function(done) {
       var conditions = {name: 'Norway'};
+      var fields     = null;
+      var options    = {};
+
+      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Norway']);
+        done();
+      });
+    });
+
+    it('should return children with conditions ($query)', function(done) {
+      var conditions = {$query: {name: 'Norway'}};
       var fields     = null;
       var options    = {};
 
@@ -275,8 +287,20 @@ describe('tree tests', function() {
       });
     });
 
-    it('should return ancenstors with conditions', function(done) {
+    it('should return ancenstors with conditions (plain object)', function(done) {
       var conditions = {name: 'Europe'};
+      var fields     = null;
+      var options    = {};
+
+      stockholm.getAncestors(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Europe']);
+        done();
+      });
+    });
+
+    it('should return ancenstors with conditions ($query)', function(done) {
+      var conditions = {$query: {name: 'Europe'}};
       var fields     = null;
       var options    = {};
 
