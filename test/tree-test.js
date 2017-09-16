@@ -233,6 +233,71 @@ describe('plugin', function() {
     });
   });
 
+  describe('getAllChildren()', function() {
+    it('using default params', function(done) {
+      var conditions = {};
+      var fields     = null;
+      var options    = {};
+
+      europe.getAllChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Norway', 'Sweden', 'Stockholm', 'Globe']);
+        done();
+      });
+    });
+
+    it('using conditions (object)', function(done) {
+      var conditions = {name: 'Stockholm'};
+      var fields     = null;
+      var options    = {};
+
+      europe.getAllChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Stockholm']);
+        done();
+      });
+    });
+
+    it('using conditions ($query)', function(done) {
+      var conditions = {$query: {name: 'Stockholm'}};
+      var fields     = null;
+      var options    = {};
+
+      europe.getAllChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Stockholm']);
+        done();
+      });
+    });
+
+    it('using fields', function(done) {
+      var conditions = {};
+      var fields     = '_id';
+      var options    = {lean: true};
+
+      europe.getAllChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        locations.should.eql([{_id: 'no'}, {_id: 'se'}, {_id: 'sthlm'}, {_id: 'globe'}]);
+        done();
+      });
+    });
+
+    it('using options (sorted)', function(done) {
+      var conditions = {};
+      var fields     = '_id';
+      var options    = {
+        sort: {name: -1},
+        lean: true
+      };
+
+      europe.getAllChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        locations.should.eql([{_id: 'se'}, {_id: 'sthlm'}, {_id: 'no'}, {_id: 'globe'}]);
+        done();
+      });
+    });
+  });
+
   describe('getParent()', function() {
     it('should get the parent', function(done) {
       var fields  = 'name';
