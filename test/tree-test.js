@@ -183,7 +183,7 @@ describe('tree tests', function() {
         done();
       });
     });
-    
+
     it('should return children with conditions', function(done) {
       var conditions = {name: 'Norway'};
       var fields     = null;
@@ -261,101 +261,57 @@ describe('tree tests', function() {
     );
   });
 
-  /*
-  describe('get ancestors', function() {
+  describe('get ancenstors', function() {
 
-    it('should return ancestors', function(done) {
-      Location.findOne({'name': 'Dann'}, function(err, dann) {
-        dann.getAncestors(function(err, ancestors) {
-          should.not.exist(err);
+    it('should return ancenstors', function(done) {
+      var conditions = {};
+      var fields     = null;
+      var options    = {};
 
-          ancestors.length.should.equal(2);
-          _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
-          done();
-        });
-      });
-    });
-
-    it('should return ancestors with only name and _id fields', function(done) {
-      Location.findOne({'name': 'Dann'}, function(err, dann) {
-        dann.getAncestors({}, 'name', function(err, ancestors) {
-          should.not.exist(err);
-
-          ancestors.length.should.equal(2);
-          ancestors[0].should.not.have.own.property('parent');
-          ancestors[0].should.have.property('name');
-          _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
-          done();
-        });
-      });
-    });
-
-    it('should return ancestors sorted on name and without wrappers',
-        function(done) {
-          Location.findOne({'name': 'Dann'}, function(err, dann) {
-            dann.getAncestors({}, null, {sort: {name: -1}, lean: 1},
-                function(err, ancestors) {
-                  should.not.exist(err);
-
-                  ancestors.length.should.equal(2);
-                  ancestors[0].name.should.equal('Carol');
-                  should.not.exist(ancestors[0].getAncestors);
-                  _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
-                  done();
-                });
-          });
-        });
-  });
-
-  describe('get children tree', function() {
-    it('should return complete children tree', function(done) {
-      Location.getChildrenTree(function(err, childrenTree) {
-        should.not.exist(err);
-
-        childrenTree.length.should.equal(2);
-
-        var adamTree  = _.find(childrenTree, function(x) { return x.name === 'Adam';});
-        var frankTree = _.find(childrenTree, function(x) { return x.name === 'Frank';});
-        var bobTree   = _.find(adamTree.children, function(x) { return x.name === 'Bob';});
-        var carolTree = _.find(adamTree.children, function(x) { return x.name === 'Carol';});
-        var danTree   = _.find(carolTree.children, function(x) { return x.name === 'Dann';});
-        var emilyTree = _.find(danTree.children, function(x) { return x.name === 'Emily';});
-
-        adamTree.children.length.should.equal(2);
-        frankTree.children.length.should.equal(0);
-
-        bobTree.children.length.should.equal(0);
-
-        carolTree.children.length.should.equal(1);
-
-        danTree.children.length.should.equal(1);
-        danTree.children[0].name.should.equal('Emily');
-
-        emilyTree.children.length.should.equal(0);
+      stockholm.getAncestors(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Europe', 'Sweden']);
         done();
       });
     });
 
-    it('should return adam\'s children tree', function(done) {
-      Location.findOne({'name': 'Adam'}, function(err, adam) {
-        adam.getChildrenTree(function(err, childrenTree) {
-          should.not.exist(err);
+    it('should return ancenstors with conditions', function(done) {
+      var conditions = {name: 'Europe'};
+      var fields     = null;
+      var options    = {};
 
-          var bobTree   = _.find(childrenTree, function(x) { return x.name === 'Bob';});
-          var carolTree = _.find(childrenTree, function(x) { return x.name === 'Carol';});
-          var danTree   = _.find(carolTree.children, function(x) { return x.name === 'Dann';});
-          var emilyTree = _.find(danTree.children, function(x) { return x.name === 'Emily';});
+      stockholm.getAncestors(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Europe']);
+        done();
+      });
+    });
 
-          bobTree.children.length.should.equal(0);
-          carolTree.children.length.should.equal(1);
-          danTree.children.length.should.equal(1);
-          danTree.children[0].name.should.equal('Emily');
-          emilyTree.children.length.should.equal(0);
+    it('should return ancenstors with fields', function(done) {
+      var conditions = {};
+      var fields     = '_id';
+      var options    = {lean: true};
 
-          done();
-        });
+      stockholm.getAncestors(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        locations.should.eql([{_id: 'eu'}, {_id: 'se'}]);
+        done();
+      });
+    });
+
+    it('should return ancenstors with options (sorted)', function(done) {
+      var conditions = {};
+      var fields     = '_id';
+      var options    = {
+        sort: {name: -1},
+        lean: true
+      };
+
+      stockholm.getAncestors(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        locations.should.eql([{_id: 'se'}, {_id: 'eu'}]);
+        done();
       });
     });
   });
-  */
 });

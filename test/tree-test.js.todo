@@ -1,0 +1,95 @@
+describe('get ancestors', function() {
+
+  it('should return ancestors', function(done) {
+    Location.findOne({'name': 'Dann'}, function(err, dann) {
+      dann.getAncestors(function(err, ancestors) {
+        should.not.exist(err);
+
+        ancestors.length.should.equal(2);
+        _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
+        done();
+      });
+    });
+  });
+
+  it('should return ancestors with only name and _id fields', function(done) {
+    Location.findOne({'name': 'Dann'}, function(err, dann) {
+      dann.getAncestors({}, 'name', function(err, ancestors) {
+        should.not.exist(err);
+
+        ancestors.length.should.equal(2);
+        ancestors[0].should.not.have.own.property('parent');
+        ancestors[0].should.have.property('name');
+        _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
+        done();
+      });
+    });
+  });
+
+  it('should return ancestors sorted on name and without wrappers',
+      function(done) {
+        Location.findOne({'name': 'Dann'}, function(err, dann) {
+          dann.getAncestors({}, null, {sort: {name: -1}, lean: 1},
+              function(err, ancestors) {
+                should.not.exist(err);
+
+                ancestors.length.should.equal(2);
+                ancestors[0].name.should.equal('Carol');
+                should.not.exist(ancestors[0].getAncestors);
+                _.map(ancestors, 'name').should.include('Carol').and.include('Adam');
+                done();
+              });
+        });
+      });
+});
+
+describe('get children tree', function() {
+  it('should return complete children tree', function(done) {
+    Location.getChildrenTree(function(err, childrenTree) {
+      should.not.exist(err);
+
+      childrenTree.length.should.equal(2);
+
+      var adamTree  = _.find(childrenTree, function(x) { return x.name === 'Adam';});
+      var frankTree = _.find(childrenTree, function(x) { return x.name === 'Frank';});
+      var bobTree   = _.find(adamTree.children, function(x) { return x.name === 'Bob';});
+      var carolTree = _.find(adamTree.children, function(x) { return x.name === 'Carol';});
+      var danTree   = _.find(carolTree.children, function(x) { return x.name === 'Dann';});
+      var emilyTree = _.find(danTree.children, function(x) { return x.name === 'Emily';});
+
+      adamTree.children.length.should.equal(2);
+      frankTree.children.length.should.equal(0);
+
+      bobTree.children.length.should.equal(0);
+
+      carolTree.children.length.should.equal(1);
+
+      danTree.children.length.should.equal(1);
+      danTree.children[0].name.should.equal('Emily');
+
+      emilyTree.children.length.should.equal(0);
+      done();
+    });
+  });
+
+  it('should return adam\'s children tree', function(done) {
+    Location.findOne({'name': 'Adam'}, function(err, adam) {
+      adam.getChildrenTree(function(err, childrenTree) {
+        should.not.exist(err);
+
+        var bobTree   = _.find(childrenTree, function(x) { return x.name === 'Bob';});
+        var carolTree = _.find(childrenTree, function(x) { return x.name === 'Carol';});
+        var danTree   = _.find(carolTree.children, function(x) { return x.name === 'Dann';});
+        var emilyTree = _.find(danTree.children, function(x) { return x.name === 'Emily';});
+
+        bobTree.children.length.should.equal(0);
+        carolTree.children.length.should.equal(1);
+        danTree.children.length.should.equal(1);
+        danTree.children[0].name.should.equal('Emily');
+        emilyTree.children.length.should.equal(0);
+
+        done();
+      });
+    });
+  });
+});
