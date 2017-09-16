@@ -5,5 +5,4 @@ node_js:
   - "5"
   - "4"
 
-after_success: 
-  - npm run coverage -t 835bb01263434d71e807427860968d2bf5964e7fea4706cf0b013490a4d22d2e
+after_success: npm run coverage
