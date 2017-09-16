@@ -216,6 +216,41 @@ describe('tree tests', function() {
       });
     });
   });
+
+  it('get parent', function(done) {
+    var fields  = 'name';
+    var options = {lean: true};
+
+    var expectedParents = [
+      [europe, null],
+      [sweden, {_id: 'eu', name: 'Europe'}],
+      [stockholm, {_id: 'se', name: 'Sweden'}],
+      [globe, {_id: 'sthlm', name: 'Stockholm'}],
+      [norway, {_id: 'eu', name: 'Europe'}],
+      [africa, null]
+    ];
+
+    Async.forEachSeries(
+        expectedParents,
+        function(arr, asyncDone) {
+          var child          = arr[0];
+          var expectedParent = arr[1];
+
+          child.getParent(fields, options, function(error, parent) {
+            if (null === expectedParent) {
+              should.not.exist(parent);
+            }
+            else {
+              parent.should.eql(expectedParent);
+            }
+
+            asyncDone();
+          });
+        },
+        done
+    );
+  });
+
   /*
   describe('get ancestors', function() {
 
