@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/vikpe/mongoose-materialized-path",
   "scripts": {
-    "test": "cross-env nyc mocha",
-    "test:watch": "cross-env nyc mocha -w",
+    "test": "nyc mocha",
+    "test:watch": "nyc mocha -w",
     "coverage": "nyc report --reporter=text-lcov > coverage/lcov.info"
   },
   "main": "index.js",
@@ -29,7 +29,6 @@
   "devDependencies": {
     "async": "^2.5.0",
     "chai": "^4.1.2",
-    "cross-env": "^5.0.5",
     "lodash": "^4.17.4",
     "mocha": "^3.5.3",
     "mongoose": "^4.11.11",
