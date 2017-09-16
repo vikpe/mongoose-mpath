@@ -14,18 +14,18 @@ describe('tree tests', function() {
       return result;
     }, {});
   };
-  
+
   // Variables
-  var pluginOptions  = {
+  var pluginOptions = {
     idType: String,
     pathSeparator: '.',
     onDelete: 'REPARENT'
   };
-  
+
   var Location;
   var LocationSchema = new mongoose.Schema({_id: String, name: String});
   LocationSchema.plugin(Tree, pluginOptions);
-  
+
   var dbConnection;
 
   // Sample locations
@@ -40,8 +40,8 @@ describe('tree tests', function() {
   beforeEach(function(done) {
     // Connect to database and setup model
     dbConnection = mongoose.createConnection('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
-    Location = dbConnection.model('Location', LocationSchema);
-    
+    Location     = dbConnection.model('Location', LocationSchema);
+
     // Schema for tests
     Location.remove({}, function(err) {
       should.not.exist(err);
@@ -64,7 +64,7 @@ describe('tree tests', function() {
   });
 
   afterEach(function() {
-    mongoose.disconnect();
+    dbConnection.close();
   });
 
   describe('creating documents', function() {
@@ -163,84 +163,61 @@ describe('tree tests', function() {
     });
   });
 
-  /*
-  describe('get children', function() {
-    it('should return immediate children with filters', function(done) {
-      Location.findOne({name: 'Adam'}, function(err, adam) {
-        should.not.exist(err);
+  describe.only('get immediate children', function() {
 
-        adam.getChildren({name: 'Bob'}, function(err, users) {
-          should.not.exist(err);
+    it('should return children', function(done) {
+      var conditions = {};
+      var fields     = null;
+      var options    = {};
 
-          users.length.should.equal(1);
-          _.map(users, 'name').should.include('Bob');
-          done();
-        });
+      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Sweden', 'Norway']);
+        done();
       });
     });
 
-    it('should return immediate children', function(done) {
-      Location.findOne({name: 'Adam'}, function(err, adam) {
-        should.not.exist(err);
+    it('should return children with conditions', function(done) {
+      var conditions = {name: 'Norway'};
+      var fields     = null;
+      var options    = {};
 
-        adam.getChildren(function(err, users) {
-          should.not.exist(err);
-
-          users.length.should.equal(2);
-          _.map(users, 'name').should.include('Bob').and.include('Carol');
-          done();
-        });
+      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        _.map(locations, 'name').should.eql(['Norway']);
+        done();
       });
     });
 
-    it('should return recursive children', function(done) {
-      Location.findOne({'name': 'Carol'}, function(err, carol) {
-        should.not.exist(err);
+    it('should return children with fields', function(done) {
+      var conditions = {};
+      var fields     = '_id';
+      var options    = {lean: true};
 
-        carol.getChildren(true, function(err, users) {
-          should.not.exist(err);
-
-          users.length.should.equal(2);
-          _.map(users, 'name').should.include('Dann').and.include('Emily');
-          done();
-        });
+      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        locations.should.eql([{_id: 'se'}, {_id: 'no'}]);
+        done();
       });
     });
 
-    it('should return children with only name and _id fields', function(done) {
-      Location.findOne({'name': 'Carol'}, function(err, carol) {
-        should.not.exist(err);
+    it('should return children with options (sorted)', function(done) {
+      var conditions = {};
+      var fields     = '_id';
+      var options    = {
+        sort: {name: 1},
+        lean: true
+      };
 
-        carol.getChildren({}, 'name', true, function(err, users) {
-          should.not.exist(err);
-
-          users.length.should.equal(2);
-          users[0].should.not.have.own.property('parent');
-          _.map(users, 'name').should.include('Dann').and.include('Emily');
-
-          done();
-        });
-      });
-    });
-
-    it('should return children sorted on name', function(done) {
-      Location.findOne({'name': 'Carol'}, function(err, carol) {
-        should.not.exist(err);
-
-        carol.getChildren({}, null, {sort: {name: -1}}, true,
-            function(err, users) {
-              should.not.exist(err);
-
-              users.length.should.equal(2);
-              users[0].name.should.equal('Emily');
-              _.map(users, 'name').should.include('Dann').and.include('Emily');
-
-              done();
-            });
+      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+        should.not.exist(error);
+        locations.should.eql([{_id: 'no'}, {_id: 'se'}]);
+        done();
       });
     });
   });
-
+  
+  /*
   describe('get ancestors', function() {
 
     it('should return ancestors', function(done) {
