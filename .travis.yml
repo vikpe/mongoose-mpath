@@ -2,7 +2,9 @@ language: node_js
 services: mongodb
 node_js:
   - "6"
-
+cache:
+  directories:
+  - node_modules
 env:
   global:
     - CC_TEST_REPORTER_ID=835bb01263434d71e807427860968d2bf5964e7fea4706cf0b013490a4d22d2e
