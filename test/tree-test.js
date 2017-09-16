@@ -6,7 +6,7 @@ var Tree     = require('../lib/tree');
 
 mongoose.Promise = global.Promise;
 
-describe('mongoose materialized path plugin', function() {
+describe('plugin', function() {
   // Utils
   var locationsToPathObject = function(locations) {
     return locations.reduce(function(result, location) {
@@ -168,13 +168,13 @@ describe('mongoose materialized path plugin', function() {
     });
   });
 
-  describe('getImmidiateChildren()', function() {
+  describe('getImmediateChildren()', function() {
     it('using default params', function(done) {
       var conditions = {};
       var fields     = null;
       var options    = {};
 
-      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+      europe.getImmediateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
         _.map(locations, 'name').should.eql(['Norway', 'Sweden']);
         done();
@@ -186,7 +186,7 @@ describe('mongoose materialized path plugin', function() {
       var fields     = null;
       var options    = {};
 
-      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+      europe.getImmediateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
         _.map(locations, 'name').should.eql(['Norway']);
         done();
@@ -198,7 +198,7 @@ describe('mongoose materialized path plugin', function() {
       var fields     = null;
       var options    = {};
 
-      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+      europe.getImmediateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
         _.map(locations, 'name').should.eql(['Norway']);
         done();
@@ -210,7 +210,7 @@ describe('mongoose materialized path plugin', function() {
       var fields     = '_id';
       var options    = {lean: true};
 
-      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+      europe.getImmediateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
         locations.should.eql([{_id: 'no'}, {_id: 'se'}]);
         done();
@@ -225,7 +225,7 @@ describe('mongoose materialized path plugin', function() {
         lean: true
       };
 
-      europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
+      europe.getImmediateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
         locations.should.eql([{_id: 'se'}, {_id: 'no'}]);
         done();
