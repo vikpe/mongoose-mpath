@@ -26,7 +26,16 @@ describe('tree tests', function() {
     onDelete: 'REPARENT'
   });
 
-  // Sample locations
+  /* 
+  Sample locations
+  --------------------------
+  africa
+  europe 
+    norway
+    sweden 
+      stockholm 
+        globe     
+  */
   var africa;
   var europe;
   var sweden;
@@ -46,13 +55,13 @@ describe('tree tests', function() {
 
       africa    = new Location({_id: 'af', name: 'Africa'});
       europe    = new Location({_id: 'eu', name: 'Europe'});
+      norway    = new Location({_id: 'no', name: 'Norway', parent: europe});
       sweden    = new Location({_id: 'se', name: 'Sweden', parent: europe});
       stockholm = new Location({_id: 'sthlm', name: 'Stockholm', parent: sweden});
       globe     = new Location({_id: 'globe', name: 'Globe', parent: stockholm});
-      norway    = new Location({_id: 'no', name: 'Norway', parent: europe});
 
       Async.forEachSeries(
-          [europe, sweden, stockholm, globe, norway, africa],
+          [africa, europe, norway, sweden, stockholm, globe],
           function(doc, asyncDone) {
             doc.save(asyncDone);
           },
@@ -69,19 +78,19 @@ describe('tree tests', function() {
     it('should set parent', function() {
       should.not.exist(africa.parent);
       should.not.exist(europe.parent);
+      norway.parent.should.equal(europe._id);
       sweden.parent.should.equal(europe._id);
       stockholm.parent.should.equal(sweden._id);
       globe.parent.should.equal(stockholm._id);
-      norway.parent.should.equal(europe._id);
     });
 
     it('should set path', function() {
       africa.path.should.equal('af');
       europe.path.should.equal('eu');
+      norway.path.should.equal('eu.no');
       sweden.path.should.equal('eu.se');
       stockholm.path.should.equal('eu.se.sthlm');
       globe.path.should.equal('eu.se.sthlm.globe');
-      norway.path.should.equal('eu.no');
     });
   });
 
@@ -98,10 +107,10 @@ describe('tree tests', function() {
           pathObject.should.eql({
             'Africa': 'af',
             'Europe': 'eu',
+            'Norway': 'eu.no',
             'Sweden': 'af.se',
             'Stockholm': 'af.se.sthlm',
-            'Globe': 'af.se.sthlm.globe',
-            'Norway': 'eu.no'
+            'Globe': 'af.se.sthlm.globe'
           });
 
           done();
@@ -139,9 +148,9 @@ describe('tree tests', function() {
           pathObject.should.eql({
             'Africa': 'af',
             'Europe': 'eu',
+            'Norway': 'eu.no',
             'Stockholm': 'eu.sthlm',
-            'Globe': 'eu.sthlm.globe',
-            'Norway': 'eu.no'
+            'Globe': 'eu.sthlm.globe'
           });
 
           done();
@@ -154,10 +163,10 @@ describe('tree tests', function() {
     it('should equal the number of ancestors', function() {
       africa.level.should.equal(1);
       europe.level.should.equal(1);
+      norway.level.should.equal(2);
       sweden.level.should.equal(2);
       stockholm.level.should.equal(3);
       globe.level.should.equal(4);
-      norway.level.should.equal(2);
     });
   });
 
@@ -170,11 +179,11 @@ describe('tree tests', function() {
 
       europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
-        _.map(locations, 'name').should.eql(['Sweden', 'Norway']);
+        _.map(locations, 'name').should.eql(['Norway', 'Sweden']);
         done();
       });
     });
-
+    
     it('should return children with conditions', function(done) {
       var conditions = {name: 'Norway'};
       var fields     = null;
@@ -194,7 +203,7 @@ describe('tree tests', function() {
 
       europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
-        locations.should.eql([{_id: 'se'}, {_id: 'no'}]);
+        locations.should.eql([{_id: 'no'}, {_id: 'se'}]);
         done();
       });
     });
@@ -203,13 +212,13 @@ describe('tree tests', function() {
       var conditions = {};
       var fields     = '_id';
       var options    = {
-        sort: {name: 1},
+        sort: {name: -1},
         lean: true
       };
 
       europe.getImmidiateChildren(conditions, fields, options, function(error, locations) {
         should.not.exist(error);
-        locations.should.eql([{_id: 'no'}, {_id: 'se'}]);
+        locations.should.eql([{_id: 'se'}, {_id: 'no'}]);
         done();
       });
     });
@@ -221,10 +230,10 @@ describe('tree tests', function() {
 
     var expectedParents = [
       [europe, null],
+      [norway, {_id: 'eu', name: 'Europe'}],
       [sweden, {_id: 'eu', name: 'Europe'}],
       [stockholm, {_id: 'se', name: 'Sweden'}],
       [globe, {_id: 'sthlm', name: 'Stockholm'}],
-      [norway, {_id: 'eu', name: 'Europe'}],
       [africa, null]
     ];
 
