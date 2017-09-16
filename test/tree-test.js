@@ -163,7 +163,7 @@ describe('tree tests', function() {
     });
   });
 
-  describe.only('get immediate children', function() {
+  describe('get immediate children', function() {
 
     it('should return children', function(done) {
       var conditions = {};
