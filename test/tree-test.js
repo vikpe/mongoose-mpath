@@ -1,12 +1,10 @@
-var Mongoose = require('mongoose');
+var mongoose = require('mongoose');
 var _        = require('lodash');
 var Async    = require('async');
 var should   = require('chai').should();
 var Tree     = require('../lib/tree');
 
-var Schema       = Mongoose.Schema;
-Mongoose.Promise = global.Promise;
-Mongoose.connect('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
+mongoose.Promise = global.Promise;
 
 describe('tree tests', function() {
   // Utils
@@ -16,17 +14,19 @@ describe('tree tests', function() {
       return result;
     }, {});
   };
-
-  // Schema for tests
-  var LocationSchema = new Schema({_id: String, name: String,});
+  
+  // Variables
   var pluginOptions  = {
     idType: String,
     pathSeparator: '.',
-    onDelete: 'REPARENT',
+    onDelete: 'REPARENT'
   };
-
+  
+  var Location;
+  var LocationSchema = new mongoose.Schema({_id: String, name: String});
   LocationSchema.plugin(Tree, pluginOptions);
-  var Location = Mongoose.model('Location', LocationSchema);
+  
+  var dbConnection;
 
   // Sample locations
   var africa;
@@ -38,6 +38,11 @@ describe('tree tests', function() {
 
   // Set up the fixture
   beforeEach(function(done) {
+    // Connect to database and setup model
+    dbConnection = mongoose.createConnection('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
+    Location = dbConnection.model('Location', LocationSchema);
+    
+    // Schema for tests
     Location.remove({}, function(err) {
       should.not.exist(err);
 
@@ -56,6 +61,10 @@ describe('tree tests', function() {
           done
       );
     });
+  });
+
+  afterEach(function() {
+    mongoose.disconnect();
   });
 
   describe('creating documents', function() {
@@ -94,7 +103,7 @@ describe('tree tests', function() {
             'Sweden': 'af.se',
             'Stockholm': 'af.se.sthlm',
             'Globe': 'af.se.sthlm.globe',
-            'Norway': 'eu.no',
+            'Norway': 'eu.no'
           });
 
           done();
@@ -115,7 +124,7 @@ describe('tree tests', function() {
             'Europe': 'eu',
             'Sweden': 'eu.se',
             'Stockholm': 'eu.se.sthlm',
-            'Globe': 'eu.se.sthlm.globe',
+            'Globe': 'eu.se.sthlm.globe'
           });
 
           done();
@@ -134,7 +143,7 @@ describe('tree tests', function() {
             'Europe': 'eu',
             'Stockholm': 'eu.sthlm',
             'Globe': 'eu.sthlm.globe',
-            'Norway': 'eu.no',
+            'Norway': 'eu.no'
           });
 
           done();
