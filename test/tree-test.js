@@ -401,4 +401,52 @@ describe('plugin', function() {
       });
     });
   });
+
+  describe('getChildrenTree()', function() {
+    it('instance method', function(done) {
+      var args = {
+        fields: '_id name parent path',
+        options: {lean: 1}
+      };
+
+      var expectedTree = [
+        {
+          '_id': 'no',
+          'children': [],
+          'name': 'Norway',
+          'parent': 'eu',
+          'path': 'eu.no'
+        },
+        {
+          '_id': 'se',
+          'children': [
+            {
+              '_id': 'sthlm',
+              'children': [
+                {
+                  '_id': 'globe',
+                  'children': [],
+                  'name': 'Globe',
+                  'parent': 'sthlm',
+                  'path': 'eu.se.sthlm.globe'
+                }
+              ],
+              'name': 'Stockholm',
+              'parent': 'se',
+              'path': 'eu.se.sthlm'
+            }
+          ],
+          'name': 'Sweden',
+          'parent': 'eu',
+          'path': 'eu.se'
+        }
+      ];
+
+      europe.getChildrenTree(args, function(error, locationTree) {
+        should.not.exist(error);
+        locationTree.should.eql(expectedTree);
+        done();
+      });
+    });
+  });
 });
