@@ -88,21 +88,19 @@ describe('plugin', function() {
     });
 
     it('should add fields to schema (custom options)', function(done) {
-      var randomId = function() {
-        return  _.shuffle(_.range(0,9)).join('').substr(0, 3)
-      };
+      var randomId = function() { return _.shuffle(_.range(0, 9)).join('').substr(0, 3); };
 
       var CustomLocationSchema = new mongoose.Schema({
-        _id: {
-          type: String,
-          'default': randomId
-        },
+        _id: {type: String, default: randomId},
         name: String
       });
-      CustomLocationSchema.plugin(Tree, {
+
+      var pluginOptions = {
         idType: String,
         pathSeparator: '.'
-      });
+      };
+
+      CustomLocationSchema.plugin(Tree, pluginOptions);
 
       var CustomLocationModel = dbConnection.model('SomeLocation', CustomLocationSchema);
       var schemaPaths = CustomLocationModel.schema.paths;
