@@ -403,7 +403,16 @@ describe('plugin', function() {
   });
 
   describe('getChildrenTree()', function() {
-    it('instance method', function(done) {
+    it('should fail when no callback is provided', function() {
+      should.throw(
+          function() {
+            Location.getChildrenTree({});
+          },
+          'no callback defined when calling getChildrenTree'
+      );
+    });
+
+    it('static method', function(done) {
       var args = {
         fields: '_id name parent path',
         options: {lean: 1}
@@ -411,38 +420,113 @@ describe('plugin', function() {
 
       var expectedTree = [
         {
-          '_id': 'no',
+          '_id': 'af',
           'children': [],
-          'name': 'Norway',
-          'parent': 'eu',
-          'path': 'eu.no'
+          'name': 'Africa',
+          'path': 'af'
         },
         {
-          '_id': 'se',
+          '_id': 'eu',
           'children': [
             {
-              '_id': 'sthlm',
+              '_id': 'no',
+              'children': [],
+              'name': 'Norway',
+              'parent': 'eu',
+              'path': 'eu.no'
+            },
+            {
+              '_id': 'se',
               'children': [
                 {
-                  '_id': 'globe',
-                  'children': [],
-                  'name': 'Globe',
-                  'parent': 'sthlm',
-                  'path': 'eu.se.sthlm.globe'
+                  '_id': 'sthlm',
+                  'children': [
+                    {
+                      '_id': 'globe',
+                      'children': [],
+                      'name': 'Globe',
+                      'parent': 'sthlm',
+                      'path': 'eu.se.sthlm.globe'
+                    }
+                  ],
+                  'name': 'Stockholm',
+                  'parent': 'se',
+                  'path': 'eu.se.sthlm'
                 }
               ],
-              'name': 'Stockholm',
-              'parent': 'se',
-              'path': 'eu.se.sthlm'
+              'name': 'Sweden',
+              'parent': 'eu',
+              'path': 'eu.se'
             }
           ],
-          'name': 'Sweden',
-          'parent': 'eu',
-          'path': 'eu.se'
+          'name': 'Europe',
+          'path': 'eu'
         }
       ];
 
-      europe.getChildrenTree(args, function(error, locationTree) {
+      Location.getChildrenTree(args, function(error, locationTree) {
+        should.not.exist(error);
+        locationTree.should.eql(expectedTree);
+        done();
+      });
+    });
+
+    it('includes path and parent fields', function(done) {
+      var args = {
+        fields: '_id name',
+        options: {lean: 1}
+      };
+
+      var expectedTree = [
+        {
+          '_id': 'sthlm',
+          'children': [
+            {
+              '_id': 'globe',
+              'children': [],
+              'name': 'Globe',
+              'parent': 'sthlm',
+              'path': 'eu.se.sthlm.globe'
+            }
+          ],
+          'name': 'Stockholm',
+          'parent': 'se',
+          'path': 'eu.se.sthlm'
+        }
+      ];
+
+      sweden.getChildrenTree(args, function(error, locationTree) {
+        should.not.exist(error);
+        locationTree.should.eql(expectedTree);
+        done();
+      });
+    });
+
+    it('fields as object', function(done) {
+      var args = {
+        fields: {_id: 1, name: 1},
+        options: {lean: 1}
+      };
+
+      var expectedTree = [
+        {
+          '_id': 'sthlm',
+          'children': [
+            {
+              '_id': 'globe',
+              'children': [],
+              'name': 'Globe',
+              'parent': 'sthlm',
+              'path': 'eu.se.sthlm.globe'
+            }
+          ],
+          'name': 'Stockholm',
+          'parent': 'se',
+          'path': 'eu.se.sthlm'
+        }
+      ];
+
+      sweden.getChildrenTree(args, function(error, locationTree) {
         should.not.exist(error);
         locationTree.should.eql(expectedTree);
         done();
