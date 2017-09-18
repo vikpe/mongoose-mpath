@@ -26,15 +26,15 @@ describe('plugin', function() {
     onDelete: 'REPARENT'
   });
 
-  /* 
+  /*
   Sample locations
   --------------------------
   africa
-  europe 
+  europe
     norway
-    sweden 
-      stockholm 
-        globe     
+    sweden
+      stockholm
+        globe
   */
   var africa;
   var europe;
@@ -72,6 +72,61 @@ describe('plugin', function() {
 
   afterEach(function() {
     dbConnection.close();
+  });
+
+  describe('setup', function() {
+    it('should add fields to schema (default options)', function() {
+      var DefaultLocationSchema = new mongoose.Schema({name: String});
+      DefaultLocationSchema.plugin(Tree);
+
+      var LocationModel = dbConnection.model('SomeLocation', DefaultLocationSchema);
+      var schemaPaths = LocationModel.schema.paths;
+
+      should.exist(schemaPaths.parent);
+      schemaPaths.parent.options.type.should.eql(mongoose.Schema.ObjectId);
+      should.exist(schemaPaths.path);
+    });
+
+    it('should add fields to schema (custom options)', function(done) {
+      var randomId = function() {
+        return  _.shuffle(_.range(0,9)).join('').substr(0, 3)
+      };
+
+      var CustomLocationSchema = new mongoose.Schema({
+        _id: {
+          type: String,
+          'default': randomId
+        },
+        name: String
+      });
+      CustomLocationSchema.plugin(Tree, {
+        idType: String,
+        pathSeparator: '.'
+      });
+
+      var CustomLocationModel = dbConnection.model('SomeLocation', CustomLocationSchema);
+      var schemaPaths = CustomLocationModel.schema.paths;
+
+      // check parent type
+      schemaPaths.parent.options.type.should.eql(String);
+
+      // check path separator
+      var parentLocation = new CustomLocationModel({name: 'Super City'});
+      var childLocation = new CustomLocationModel({name: 'Sub City', parent: parentLocation});
+
+      Async.forEachSeries(
+          [parentLocation, childLocation],
+          function(doc, asyncDone) {
+            doc.save(asyncDone);
+          },
+          function() {
+            var expectedPath = parentLocation._id.toString() + '.' + childLocation._id.toString();
+            childLocation.path.should.equal(expectedPath);
+
+            done();
+          }
+      );
+    });
   });
 
   describe('pre save middleware', function() {
@@ -404,18 +459,76 @@ describe('plugin', function() {
 
   describe('getChildrenTree()', function() {
     it('should fail when no callback is provided', function() {
-      should.throw(
-          function() {
-            Location.getChildrenTree({});
-          },
-          'no callback defined when calling getChildrenTree'
-      );
+      var testFunc = function() {
+        Location.getChildrenTree();
+      };
+
+      should.throw(testFunc, 'no callback defined when calling getChildrenTree');
     });
 
-    it('static method', function(done) {
+    it('static method - no args', function(done) {
+      var expectedTree = [
+        {
+          '__v': 0,
+          '_id': 'af',
+          'children': [],
+          'name': 'Africa',
+          'path': 'af'
+        },
+        {
+          '__v': 0,
+          '_id': 'eu',
+          'children': [
+            {
+              '__v': 0,
+              '_id': 'no',
+              'children': [],
+              'name': 'Norway',
+              'parent': 'eu',
+              'path': 'eu.no'
+            },
+            {
+              '__v': 0,
+              '_id': 'se',
+              'children': [
+                {
+                  '__v': 0,
+                  '_id': 'sthlm',
+                  'children': [
+                    {
+                      '__v': 0,
+                      '_id': 'globe',
+                      'children': [],
+                      'name': 'Globe',
+                      'parent': 'sthlm',
+                      'path': 'eu.se.sthlm.globe'
+                    }
+                  ],
+                  'name': 'Stockholm',
+                  'parent': 'se',
+                  'path': 'eu.se.sthlm'
+                }
+              ],
+              'name': 'Sweden',
+              'parent': 'eu',
+              'path': 'eu.se'
+            }
+          ],
+          'name': 'Europe',
+          'path': 'eu'
+        }
+      ];
+
+      Location.getChildrenTree(function(error, locationTree) {
+        should.not.exist(error);
+        locationTree.should.eql(expectedTree);
+        done();
+      });
+    });
+
+    it('static method - args', function(done) {
       var args = {
-        fields: '_id name parent path',
-        options: {lean: 1}
+        fields: '_id name parent path'
       };
 
       var expectedTree = [
@@ -473,8 +586,7 @@ describe('plugin', function() {
 
     it('includes path and parent fields', function(done) {
       var args = {
-        fields: '_id name',
-        options: {lean: 1}
+        fields: '_id name'
       };
 
       var expectedTree = [
@@ -504,8 +616,7 @@ describe('plugin', function() {
 
     it('fields as object', function(done) {
       var args = {
-        fields: {_id: 1, name: 1},
-        options: {lean: 1}
+        fields: {_id: 1, name: 1}
       };
 
       var expectedTree = [
