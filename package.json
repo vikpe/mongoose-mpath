@@ -1,7 +1,7 @@
 {
   "name": "mongoose-path-tree",
   "version": "0.1.0",
-  "description": "Mongoose plugin for tree hierarchy using the materialized path strategy",
+  "description": "Mongoose plugin for tree hierarchy using the materialized path pattern.",
   "keywords": [
     "mongoose",
     "materialized",
