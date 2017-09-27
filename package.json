@@ -1,5 +1,5 @@
 {
-  "name": "mongoose-path-tree",
+  "name": "mongoose-mpath",
   "version": "0.1.0",
   "description": "Mongoose plugin for tree hierarchy using the materialized path pattern.",
   "keywords": [
@@ -13,12 +13,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vikpe/mongoose-materialized-path.git"
+    "url": "git+https://github.com/vikpe/mongoose-mpath.git"
   },
   "bugs": {
-    "url": "https://github.com/vikpe/mongoose-materialized-path/issues"
+    "url": "https://github.com/vikpe/mongoose-mpath/issues"
   },
-  "homepage": "https://github.com/vikpe/mongoose-materialized-path",
+  "homepage": "https://github.com/vikpe/mongoose-mpath",
   "scripts": {
     "test": "nyc mocha",
     "test:watch": "nyc mocha -w",
