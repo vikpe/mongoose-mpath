@@ -1,7 +1,7 @@
 {
   "name": "mongoose-path-tree",
   "version": "0.1.0",
-  "description": "Materialized path hierarchy for mongoose",
+  "description": "Mongoose plugin for tree hierarchy using the materialized path strategy",
   "keywords": [
     "mongoose",
     "materialized",
@@ -25,15 +25,16 @@
     "coverage": "nyc report --reporter=text-lcov > coverage/lcov.info"
   },
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "mongoose": "^4.11.11",
+    "stream-worker": "^2.0.1"
+  },
   "devDependencies": {
     "async": "^2.5.0",
     "chai": "^4.1.2",
     "lodash": "^4.17.4",
     "mocha": "^3.5.3",
-    "mongoose": "^4.11.11",
     "nyc": "^11.2.1",
-    "shortid": "^2.2.8",
-    "stream-worker": "^2.0.1"
+    "shortid": "^2.2.8"
   }
 }
