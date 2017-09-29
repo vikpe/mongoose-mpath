@@ -10,7 +10,7 @@ npm install mongoose-mpath
 
 ## Setup
 
-```
+```javascript
 var MpathPlugin = require('mongoose-mpath');
 MySchema.plugin(MpathPlugin, [OPTIONS]);
 ```
@@ -39,12 +39,66 @@ var CategoryModel = Mongoose.model('Category', CategorySchema);
 ```
 
 ## API
-* [`Document.level()`](#level)
+* [`getAncestors()`](#getAncestors)
+* [`getAllChildren()`](#getAllChildren)
+* [`getImmediateChildren()`](#getImmediateChildren)
+* [`getChildrenTree()`](#getChildrenTree)
+* [`getParent()`](#getParent)
+* [`level`](#level)
 
----
+### getAncestors()
+```
+document.getAncestors([conditions], [fields], [options], [callback])
+```
+
+Returns the ancestors of the document.
+
+(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
+
+
+### getAllChildren()
+```
+document.getAllChildren(conditions, [fields], [options], [callback])
+```
+
+Returns all children of the document (recursively).
+
+(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
+
+
+### getChildrenTree
+```
+document.getChildrenTree(rootDoc, [args], [callback]) // as method
+model.getChildrenTree(rootDoc, [args], [callback]) // as static
+```
+
+Returns all children as a tree hierarchy (recursively).
+
+
+### getImmediateChildren()
+```
+document.getImmediateChildren(conditions, [fields], [options], [callback])
+```
+
+Returns the immediate children of the document.
+
+(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
+
+
+### getParent()
+```
+document.getParent([fields], [options], [callback])
+```
+
+Returns the parent document of the document.
+
+(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
+
 
 ### level
-`(virtual field) level`
+```
+document.level
+```
 
 A Virtual field that equals to the level of a document in the hierarchy.
 
