@@ -39,11 +39,11 @@ var CategoryModel = Mongoose.model('Category', CategorySchema);
 ```
 
 ## API
-* [`getAncestors()`](#getAncestors)
-* [`getAllChildren()`](#getAllChildren)
-* [`getImmediateChildren()`](#getImmediateChildren)
-* [`getChildrenTree()`](#getChildrenTree)
-* [`getParent()`](#getParent)
+* [`getAncestors()`](#getancestors)
+* [`getAllChildren()`](#getallchildren)
+* [`getImmediateChildren()`](#getimmediatechildren)
+* [`getChildrenTree()`](#getchildrentree)
+* [`getParent()`](#getparent)
 * [`level`](#level)
 
 ### getAncestors()
@@ -66,10 +66,10 @@ Returns all children of the document (recursively).
 (see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
 
 
-### getChildrenTree
+### getChildrenTree()
 ```
-document.getChildrenTree(rootDoc, [args], [callback]) // as method
-model.getChildrenTree(rootDoc, [args], [callback]) // as static
+document.getChildrenTree(rootDocument, [args], [callback]) // as method
+model.getChildrenTree([args], [callback]) // as static
 ```
 
 Returns all children as a tree hierarchy (recursively).
