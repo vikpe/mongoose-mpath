@@ -12,10 +12,10 @@ npm install mongoose-mpath
 
 ```javascript
 var MpathPlugin = require('mongoose-mpath');
-MySchema.plugin(MpathPlugin, [OPTIONS]);
+MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 ```
 
-**Options**
+**Plugin options**
 
 ```javascript
 {
@@ -25,7 +25,7 @@ MySchema.plugin(MpathPlugin, [OPTIONS]);
 }
 ```
 
-## Example
+**Example setup**
 ```javascript
 var Mongoose = require('mongoose');
 var MpathPlugin = require('mongoose-mpath');
