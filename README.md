@@ -10,8 +10,8 @@ npm install mongoose-mpath
 
 ## Setup
 
+**Semantics**
 ```javascript
-var MpathPlugin = require('mongoose-mpath');
 MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 ```
 
@@ -97,27 +97,89 @@ Returns the parent document of the document.
 
 ### level
 ```
-document.level
+(int) document.level
 ```
 
 A Virtual field that equals to the level of a document in the hierarchy.
 
-**Returns**
+## Examples
 
-* `(int) level`
+Given the following document hierarchy:
+```
+africa
+europe
+ - norway
+ - sweden
+   -- stockholm
+     --- globe
+```
 
-**Example**
 
-Given the following hierarchy:
+**getAncestors()**
 ```
-alpha
- - beta
-  - gamma
+europe.getAncestors()       // []
+stockholm.getAncestors()    // [europe, sweden]
+globe.getAncestors()        // [europe, sweden, stockholm]
 ```
 
-it would return the following:
+**getAllChildren()**
 ```
-alpha.level // 1
-beta.level  // 2
-gamma.level // 3
+europe.getAllChildren()       // [sweden, stockholm, globe]
+stockholm.getAllChildren()    // [globe]
+globe.getAllChildren()        // []
 ```
+
+**getImmediateChildren()**
+```
+europe.getImmediateChildren()       // [norway, sweden]
+stockholm.getImmediateChildren()    // [globe]
+globe.getImmediateChildren()        // []
+```
+
+**getChildrenTree()**
+```
+sweden.getChildrenTree()
+
+/*
+{
+  'id': 'se',
+  'name': 'sweden',
+  'parent': 'eu',
+  'path': 'eu#se'
+  'children': [
+    {
+      'id': 'sthlm',
+      'name': 'sthlm',
+      'parent': 'se',
+      'path': 'eu#se#sthlm',
+      'children': [
+        {
+          'id': 'globe',
+          'name': 'globe',
+          'parent': 'sthlm',
+          'path': 'eu#se#sthlm#globe'
+          'children': [],          
+        }
+      ],
+    }
+  ],
+}
+*/
+```
+
+**getParent()**
+```
+europe.getParent()       // (null)
+stockholm.getParent()    // sweden
+globe.getParent()        // stockholm
+```
+
+**level**
+```
+africa.level    // 1
+sweden.level    // 2
+globe.level     // 4
+```
+
+## Credits
+This plugin is inspired by [swayf/mongoose-path-tree](https://github.com/swayf/mongoose-path-tree).
