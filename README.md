@@ -337,5 +337,10 @@ stockholm.level    // (Number) 3
 globe.level        // (Number) 4
 ```
 
+## Development
+Feedback and pull requests are most welcome!
+
+Run tests using `npm run test`
+
 ## Credits
 This plugin is inspired by [swayf/mongoose-path-tree](https://github.com/swayf/mongoose-path-tree).
