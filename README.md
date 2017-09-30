@@ -30,13 +30,46 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 var Mongoose = require('mongoose');
 var MpathPlugin = require('mongoose-mpath');
 
-var CategorySchema = new Mongoose.Schema({ name : String });
-CategorySchema.plugin(MpathPlugin, {
+var LocationSchema = new Mongoose.Schema({ name : String });
+LocationSchema.plugin(MpathPlugin, {
   pathSeparator: '.'
 });
 
-var CategoryModel = Mongoose.model('Category', CategorySchema);
+var LocationModel = Mongoose.model('Location', LocationSchema);
+
+var europe = new LocationModel({name: 'europe'});
+var sweden = new LocationModel({name: 'sweden', parent: europe});
+var stockholm = new LocationModel({name: 'stockholm', parent: sweden});
+
+europe.save(function() {
+  sweden.save(function() {
+    stockholm.save();
+  });
+});
 ```
+
+At this point in mongoDB you will have documents similar to
+```
+{
+  "_id" : ObjectId("50136e40c78c4b9403000001"),
+  "name" : "europe",
+  "path" : "50136e40c78c4b9403000001"
+}
+{
+  "_id" : ObjectId("50136e40c78c4b9403000002"),
+  "name" : "sweden",
+  "parent" : ObjectId("50136e40c78c4b9403000001"),
+  "path" : "50136e40c78c4b9403000001#50136e40c78c4b9403000002"
+}
+{
+  "_id" : ObjectId("50136e40c78c4b9403000003"),
+  "name" : "stockholm",
+  "parent" : ObjectId("50136e40c78c4b9403000002"),
+  "path" : "50136e40c78c4b9403000001#50136e40c78c4b9403000002#50136e40c78c4b9403000003"
+}
+```
+
+The path is used for recursive methods and is kept up to date by the plugin if the parent is changed.
 
 ## API
 * [`getAncestors()`](#getancestors)
