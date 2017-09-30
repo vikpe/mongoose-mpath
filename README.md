@@ -79,63 +79,169 @@ The path is used for recursive methods and is kept up to date by the plugin if t
 * [`getParent()`](#getparent)
 * [`level`](#level)
 
+All examples below are based on the following document hierarchy:
+```
+africa
+europe
+ - norway
+ - sweden
+   -- stockholm
+     --- globe
+```
+
 ### getAncestors()
+Returns ancestors of a document.
+
+**Signature**
 ```
-document.getAncestors([conditions], [fields], [options], [callback])
+document.getAncestors(conditions, [fields], [options], callback)
 ```
 
-Returns the ancestors of the document.
+**Arguments**
+* See offical docs on [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments.
 
-(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
-
+**Example**
+```javascript
+stockholm.getAncestors({}, function(error, ancestors) {
+  // ancestors is an array of [europe, sweden] 
+});
+```
 
 ### getAllChildren()
+Returns all children of a document.
+
+**Signature**
 ```
-document.getAllChildren(conditions, [fields], [options], [callback])
+document.getAllChildren(conditions, [fields], [options], callback)
 ```
 
-Returns all children of the document (recursively).
+**Arguments**
+* See offical docs on [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments.
 
-(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
+**Example**
+```javascript
+sweden.getAllChildren({}, function(error, ancestors) {
+  // ancestors is an array of [stockholm, globe] 
+});
 
+stockholm.getAllChildren({}, function(error, ancestors) {
+  // ancestors is an array of [globe] 
+});
+```
 
 ### getChildrenTree()
+Returns all children of a document formatted as a tree hierarchy.
+
+**Signature**
 ```
-document.getChildrenTree(rootDocument, [args], [callback]) // as method
-model.getChildrenTree([args], [callback]) // as static
+document.getChildrenTree([args], callback)                  // as method
+document.getChildrenTree(rootDocument, [args], callback)    // as static
 ```
 
-Returns all children as a tree hierarchy (recursively).
+**Arguments**
+* (Object) `args`
+    ```
+    {
+        (Object) filters: {},            // mongoose query filters
+        (Object|String) fields: null,    // mongoose query fields (null equals all fields)
+        (Object) options: {},            // mongoose query options
+        (String) populate: '',           // string to passed to populate()
+        (int) minLevel: 1,               // minimum level to search from
+    }
+    ```
+    
+    Example
+    ```javascript
+    var args = {
+      filters: {author: 'vikpe'},
+      fields: '_id name',
+      options: false,
+      populate: 'repos',
+      minLevel: 2
+    }
+    ```
+* (Function) `callback`
 
+**Example**
+```javascript
+sweden.getChildrenTree(function(error, tree) {
+  // tree is an array similar to
+  /*
+  [
+    {
+      'name': 'sthlm',
+      'children': [
+        {
+          'name': 'globe',
+          'children': [],          
+        }
+      ],
+    }
+  ]
+  */
+});
+```
 
 ### getImmediateChildren()
+Returns immediate children of a document.
+
+**Signature**
 ```
-document.getImmediateChildren(conditions, [fields], [options], [callback])
+document.getImmediateChildren(conditions, [fields], [options], callback)
 ```
 
-Returns the immediate children of the document.
+**Arguments**
+* See offical docs on [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments.
 
-(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
+**Example**
+```javascript
+europe.getImmediateChildren({}, function(error, children) {
+  // children is an array of [norway, sweden] 
+});
 
+sweden.getImmediateChildren({}, function(error, children) {
+  // children is an array of [stockholm] 
+});
+```
 
 ### getParent()
+Returns parent of a document.
+
+**Signature**
 ```
-document.getParent([fields], [options], [callback])
+document.getParent([fields], [options], callback)
 ```
 
-Returns the parent document of the document.
+**Arguments**
+* See offical docs on [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments.
 
-(see [model.find()](http://mongoosejs.com/docs/api.html#model_Model.find) for description of arguments)
+**Example**
+```javascript
+sweden.getParent(function(error, parent) {
+  // parent is an object equal to europe
+});
 
+stockholm.getParent(function(error, parent) {
+  // parent is an object equal to sweden
+});
+```
 
 ### level
-```
-(int) document.level
-```
-
 A Virtual field that equals to the level of a document in the hierarchy.
 
-## Examples
+**Signature**
+```
+(Number) document.level
+```
+
+**Example**
+```
+africa.level    // 1
+sweden.level    // 2
+globe.level     // 4
+```
+
+## More examples
 
 Given the following document hierarchy:
 ```
@@ -150,68 +256,85 @@ europe
 
 **getAncestors()**
 ```
-europe.getAncestors()       // []
-stockholm.getAncestors()    // [europe, sweden]
-globe.getAncestors()        // [europe, sweden, stockholm]
+europe.getAncestors()       // (Array) []
+stockholm.getAncestors()    // (Array) [europe, sweden]
+globe.getAncestors()        // (Array) [europe, sweden, stockholm]
 ```
 
 **getAllChildren()**
 ```
-europe.getAllChildren()       // [sweden, stockholm, globe]
-stockholm.getAllChildren()    // [globe]
-globe.getAllChildren()        // []
+europe.getAllChildren()       // (Array) [sweden, stockholm, globe]
+stockholm.getAllChildren()    // (Array) [globe]
+globe.getAllChildren()        // (Array) []
 ```
 
 **getImmediateChildren()**
 ```
-europe.getImmediateChildren()       // [norway, sweden]
-stockholm.getImmediateChildren()    // [globe]
-globe.getImmediateChildren()        // []
+europe.getImmediateChildren()       // (Array) [norway, sweden]
+stockholm.getImmediateChildren()    // (Array) [globe]
+globe.getImmediateChildren()        // (Array) []
 ```
 
 **getChildrenTree()**
 ```
+europe.getChildrenTree()
+
+/*
+[
+  {
+    'name': 'norway',
+    'children': []
+  },
+  {
+    'name': 'sweden',
+    'children': [
+        {
+          'name': 'sthlm',
+          'children': [
+            {
+              'name': 'globe',
+              'children': []          
+            }
+          ],
+        }
+    ]
+   }  
+]
+*/
+
+
 sweden.getChildrenTree()
 
 /*
-{
-  'id': 'se',
-  'name': 'sweden',
-  'parent': 'eu',
-  'path': 'eu#se'
-  'children': [
-    {
-      'id': 'sthlm',
-      'name': 'sthlm',
-      'parent': 'se',
-      'path': 'eu#se#sthlm',
-      'children': [
-        {
-          'id': 'globe',
-          'name': 'globe',
-          'parent': 'sthlm',
-          'path': 'eu#se#sthlm#globe'
-          'children': [],          
-        }
-      ],
-    }
-  ],
-}
+[
+  {
+    'name': 'sthlm',
+    'children': [
+      {
+        'name': 'globe',
+        'children': [],          
+      }
+    ],
+  }
+]
 */
 ```
 
 **getParent()**
 ```
 europe.getParent()       // (null)
-stockholm.getParent()    // sweden
-globe.getParent()        // stockholm
+stockholm.getParent()    // (Object) sweden
+globe.getParent()        // (Object) stockholm
 ```
 
 **level**
 ```
-africa.level    // 1
-sweden.level    // 2
-globe.level     // 4
+africa.level       // (Number) 1
+europe.level       // (Number) 1
+norway.level       // (Number) 2
+sweden.level       // (Number) 2
+stockholm.level    // (Number) 3
+globe.level        // (Number) 4
 ```
 
 ## Credits
