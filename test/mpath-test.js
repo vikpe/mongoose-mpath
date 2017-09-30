@@ -1,12 +1,12 @@
-var mongoose = require('mongoose');
-var _        = require('lodash');
-var Async    = require('async');
-var should   = require('chai').should();
-var Tree     = require('../lib/tree');
+var mongoose    = require('mongoose');
+var _           = require('lodash');
+var Async       = require('async');
+var should      = require('chai').should();
+var MpathPlugin = require('./../lib/mpath');
 
 mongoose.Promise = global.Promise;
 
-describe('plugin', function() {
+describe('mpath plugin', function() {
   // Utils
   var locationsToPathObject = function(locations) {
     return locations.reduce(function(result, location) {
@@ -20,7 +20,7 @@ describe('plugin', function() {
   var Location;
   var LocationSchema = new mongoose.Schema({_id: String, name: String});
 
-  LocationSchema.plugin(Tree, {
+  LocationSchema.plugin(MpathPlugin, {
     idType: String,
     pathSeparator: '.',
     onDelete: 'REPARENT'
@@ -77,10 +77,10 @@ describe('plugin', function() {
   describe('setup', function() {
     it('should add fields to schema (default options)', function() {
       var DefaultLocationSchema = new mongoose.Schema({name: String});
-      DefaultLocationSchema.plugin(Tree);
+      DefaultLocationSchema.plugin(MpathPlugin);
 
       var LocationModel = dbConnection.model('SomeLocation', DefaultLocationSchema);
-      var schemaPaths = LocationModel.schema.paths;
+      var schemaPaths   = LocationModel.schema.paths;
 
       should.exist(schemaPaths.parent);
       schemaPaths.parent.options.type.should.eql(mongoose.Schema.ObjectId);
@@ -100,17 +100,17 @@ describe('plugin', function() {
         pathSeparator: '.'
       };
 
-      CustomLocationSchema.plugin(Tree, pluginOptions);
+      CustomLocationSchema.plugin(MpathPlugin, pluginOptions);
 
       var CustomLocationModel = dbConnection.model('SomeLocation', CustomLocationSchema);
-      var schemaPaths = CustomLocationModel.schema.paths;
+      var schemaPaths         = CustomLocationModel.schema.paths;
 
       // check parent type
       schemaPaths.parent.options.type.should.eql(String);
 
       // check path separator
       var parentLocation = new CustomLocationModel({name: 'Super City'});
-      var childLocation = new CustomLocationModel({name: 'Sub City', parent: parentLocation});
+      var childLocation  = new CustomLocationModel({name: 'Sub City', parent: parentLocation});
 
       Async.forEachSeries(
           [parentLocation, childLocation],

@@ -1,1 +1,1 @@
-module.exports = require('./lib/tree');
+module.exports = require('./lib/mpath');
