@@ -190,23 +190,46 @@ describe('mpath plugin', function() {
       });
     });
 
-    it('should reparent children', function(done) {
-      sweden.remove(function() {
-        Location.find(function(err, locations) {
-          should.not.exist(err);
+    describe('should reparent', function(done) {
 
-          var pathObject = locationsToPathObject(locations);
-          pathObject.should.eql({
-            'Africa': 'af',
-            'Europe': 'eu',
-            'Norway': 'eu.no',
-            'Stockholm': 'eu.sthlm',
-            'Globe': 'eu.sthlm.globe'
+      it('when new parent is defined', function(done) {
+        sweden.remove(function() {
+          Location.find(function(err, locations) {
+            should.not.exist(err);
+
+            var pathObject = locationsToPathObject(locations);
+            pathObject.should.eql({
+              'Africa': 'af',
+              'Europe': 'eu',
+              'Norway': 'eu.no',
+              'Stockholm': 'eu.sthlm',
+              'Globe': 'eu.sthlm.globe'
+            });
+
+            done();
           });
-
-          done();
         });
       });
+
+      it('when new parent is undefined', function(done) {
+        europe.remove(function() {
+          Location.find(function(err, locations) {
+            should.not.exist(err);
+
+            var pathObject = locationsToPathObject(locations);
+            pathObject.should.eql({
+              'Africa': 'af',
+              'Norway': 'no',
+              'Sweden': 'se',
+              'Stockholm': 'se.sthlm',
+              'Globe': 'se.sthlm.globe'
+            });
+
+            done();
+          });
+        });
+      });
+
     });
   });
 
