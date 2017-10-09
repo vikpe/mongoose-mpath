@@ -43,13 +43,7 @@ describe('mpath plugin', function() {
   var globe;
   var norway;
 
-  // Set up the fixture
-  beforeEach(function(done) {
-    // Connect to database and setup model
-    dbConnection = mongoose.createConnection('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
-    Location     = dbConnection.model('Location', LocationSchema);
-
-    // Create locations
+  var createLocations = function(done) {
     Location.remove({}, function(err) {
       should.not.exist(err);
 
@@ -68,6 +62,14 @@ describe('mpath plugin', function() {
           done
       );
     });
+  };
+
+  // Set up the fixture
+  beforeEach(function(done) {
+    // Connect to database and setup model
+    dbConnection = mongoose.createConnection('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
+    Location     = dbConnection.model('Location', LocationSchema);
+    createLocations(done);
   });
 
   afterEach(function() {
@@ -88,7 +90,9 @@ describe('mpath plugin', function() {
     });
 
     it('should add fields to schema (custom options)', function(done) {
-      var randomId = function() { return _.shuffle(_.range(0, 9)).join('').substr(0, 3); };
+      var randomId = function() {
+        return _.shuffle(_.range(0, 9)).join('').substr(0, 3);
+      };
 
       var CustomLocationSchema = new mongoose.Schema({
         _id: {type: String, default: randomId},
@@ -171,28 +175,27 @@ describe('mpath plugin', function() {
   });
 
   describe('pre remove middleware', function() {
-    it('should remove leaf nodes', function(done) {
-      norway.remove(function() {
-        Location.find({}, function(error, locations) {
-          should.not.exist(error);
+    describe('using onDelete="REPARENT" (default)', function() {
+      it('should remove leaf nodes', function(done) {
+        norway.remove(function() {
+          Location.find({}, function(error, locations) {
+            should.not.exist(error);
 
-          var pathObject = locationsToPathObject(locations);
-          pathObject.should.eql({
-            'Africa': 'af',
-            'Europe': 'eu',
-            'Sweden': 'eu.se',
-            'Stockholm': 'eu.se.sthlm',
-            'Globe': 'eu.se.sthlm.globe'
+            var pathObject = locationsToPathObject(locations);
+            pathObject.should.eql({
+              'Africa': 'af',
+              'Europe': 'eu',
+              'Sweden': 'eu.se',
+              'Stockholm': 'eu.se.sthlm',
+              'Globe': 'eu.se.sthlm.globe'
+            });
+
+            done();
           });
-
-          done();
         });
       });
-    });
 
-    describe('should reparent', function(done) {
-
-      it('when new parent is defined', function(done) {
+      it('should reparent when new parent is defined', function(done) {
         sweden.remove(function() {
           Location.find(function(err, locations) {
             should.not.exist(err);
@@ -211,7 +214,7 @@ describe('mpath plugin', function() {
         });
       });
 
-      it('when new parent is undefined', function(done) {
+      it('should reparent when new parent is undefined', function(done) {
         europe.remove(function() {
           Location.find(function(err, locations) {
             should.not.exist(err);
@@ -229,7 +232,39 @@ describe('mpath plugin', function() {
           });
         });
       });
+    });
 
+    describe('using onDelete="DELETE"', function() {
+      beforeEach(function(done) {
+        // re-setup schema, model, database
+        LocationSchema = new mongoose.Schema({_id: String, name: String});
+        LocationSchema.plugin(MpathPlugin, {
+          idType: String,
+          pathSeparator: '.',
+          onDelete: 'DELETE'
+        });
+
+        dbConnection = mongoose.createConnection('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
+        Location     = dbConnection.model('Location', LocationSchema);
+        createLocations(done);
+      });
+
+      it('should delete itself and all children', function(done) {
+        sweden.remove(function() {
+          Location.find({}, function(error, locations) {
+            should.not.exist(error);
+
+            var pathObject = locationsToPathObject(locations);
+            pathObject.should.eql({
+              'Africa': 'af',
+              'Europe': 'eu',
+              'Norway': 'eu.no'
+            });
+
+            done();
+          });
+        });
+      });
     });
   });
 
