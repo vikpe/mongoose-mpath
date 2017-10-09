@@ -237,11 +237,13 @@ describe('mpath plugin', function() {
     describe('using onDelete="DELETE"', function() {
       beforeEach(function(done) {
         // re-setup schema, model, database
+        dbConnection.close();
+
         LocationSchema = new mongoose.Schema({_id: String, name: String});
         LocationSchema.plugin(MpathPlugin, {
           idType: String,
           pathSeparator: '.',
-          onDelete: 'DELETE'
+          onDelete: 'DELETE' // <- updated plugin option
         });
 
         dbConnection = mongoose.createConnection('mongodb://localhost:27017/mongoose-path-tree', {useMongoClient: true});
