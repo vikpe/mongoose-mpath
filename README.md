@@ -30,10 +30,8 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 var Mongoose = require('mongoose');
 var MpathPlugin = require('mongoose-mpath');
 
-var LocationSchema = new Mongoose.Schema({ name : String });
-LocationSchema.plugin(MpathPlugin, {
-  pathSeparator: '.'
-});
+var LocationSchema = new Mongoose.Schema({name: String});
+LocationSchema.plugin(MpathPlugin);
 
 var LocationModel = Mongoose.model('Location', LocationSchema);
 
