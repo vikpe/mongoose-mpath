@@ -2,7 +2,9 @@ var mongoose    = require('mongoose');
 var _           = require('lodash');
 var Async       = require('async');
 var should      = require('chai').should();
+var sinon       = require('sinon');
 var MpathPlugin = require('./../lib/mpath');
+require('sinon-mongoose');
 
 mongoose.Promise = global.Promise;
 
@@ -132,6 +134,19 @@ describe('mpath plugin', function() {
   });
 
   describe('pre save middleware', function() {
+    it('should not perform any operations when document isn\'t new or hasn\'t changed parent', function(done) {
+      sinon.spy(sweden.collection, 'findOne');
+      sinon.spy(sweden.collection, 'update');
+      var pathBeforeSave = sweden.path;
+
+      sweden.save(function() {
+        sweden.path.should.equal(pathBeforeSave);
+        sinon.assert.notCalled(sweden.collection.findOne);
+        sinon.assert.notCalled(sweden.collection.update);
+        done();
+      })
+    });
+
     it('should set parent', function() {
       should.not.exist(africa.parent);
       should.not.exist(europe.parent);
@@ -175,6 +190,27 @@ describe('mpath plugin', function() {
   });
 
   describe('pre remove middleware', function() {
+    it('should not reparent/delete children when path is undefined', function(done) {
+      sweden.path = undefined;
+      sweden.remove(function() {
+
+        Location.find({}, function(error, locations) {
+          should.not.exist(error);
+
+          var pathObject = locationsToPathObject(locations);
+          pathObject.should.eql({
+            'Africa': 'af',
+            'Europe': 'eu',
+            'Norway': 'eu.no',
+            'Stockholm': 'eu.se.sthlm',
+            'Globe': 'eu.se.sthlm.globe'
+          });
+
+          done();
+        });
+      });
+    });
+
     describe('using onDelete="REPARENT" (default)', function() {
       it('should remove leaf nodes', function(done) {
         norway.remove(function() {
@@ -522,6 +558,27 @@ describe('mpath plugin', function() {
       };
 
       should.throw(testFunc, 'no callback defined when calling getChildrenTree');
+    });
+
+    it('should handle find error', function(done) {
+      var LocationMock = sinon.mock(Location);
+      var errorMessage = 'An error occured';
+
+      LocationMock
+          .expects('find')
+          .chain('populate').withArgs('')
+          .chain('exec')
+          .yields(errorMessage);
+
+      var args = {};
+
+      sweden.getChildrenTree(args, function(error) {
+        LocationMock.verify();
+        LocationMock.restore();
+
+        error.should.equal(errorMessage);
+        done();
+      });
     });
 
     it('static method - no args', function(done) {
