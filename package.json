@@ -26,7 +26,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^4.12.1",
+    "mongoose": "^4.12.4",
     "stream-worker": "^2.0.1"
   },
   "devDependencies": {
@@ -36,7 +36,7 @@
     "mocha": "^4.0.0",
     "nyc": "^11.2.1",
     "shortid": "^2.2.8",
-    "sinon": "^4.0.1",
+    "sinon": "^4.0.2",
     "sinon-mongoose": "^2.0.2"
   }
 }
