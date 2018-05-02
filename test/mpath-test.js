@@ -117,19 +117,15 @@ describe('mpath plugin', function() {
       // check path separator
       var parentLocation = new CustomLocationModel({name: 'Super City'});
       var childLocation  = new CustomLocationModel({name: 'Sub City', parent: parentLocation});
-
-      Async.forEachSeries(
-          [parentLocation, childLocation],
-          function(doc, asyncDone) {
-            doc.save(asyncDone);
-          },
-          function() {
-            var expectedPath = parentLocation._id.toString() + '.' + childLocation._id.toString();
+	  
+	  parentLocation.save(function() {
+		  childLocation.save(function() {
+			var expectedPath = parentLocation._id.toString() + '.' + childLocation._id.toString();
             childLocation.path.should.equal(expectedPath);
 
             done();
-          }
-      );
+		  });
+	  });
     });
   });
 
