@@ -26,7 +26,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^4.13.11",
+    "mongoose": "^4.13.12",
     "stream-worker": "^2.0.1"
   },
   "devDependencies": {
