@@ -1,6 +1,6 @@
 {
   "name": "mongoose-mpath",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "Mongoose plugin for tree hierarchy using the materialized path pattern.",
   "keywords": [
     "mongoose",
@@ -20,23 +20,33 @@
   },
   "homepage": "https://github.com/vikpe/mongoose-mpath",
   "scripts": {
-    "test": "nyc mocha",
-    "test:watch": "nyc mocha -w",
+    "test": "nyc --source-map --produce-source-map mocha --require @babel/polyfill --require @babel/register --timeout 8000 --exit",
+    "test:watch": "nyc --source-map --produce-source-map mocha --require @babel/polyfill --require @babel/register -w",
     "coverage": "nyc report --reporter=text-lcov > coverage/lcov.info"
   },
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^4.13.12",
+    "mongoose": "^5.3.0",
     "stream-worker": "^2.0.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/node": "^7.0.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/register": "^7.0.0",
     "async": "^2.6.1",
-    "chai": "^4.1.2",
-    "lodash": "^4.17.5",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.4",
+    "chai": "^4.2.0",
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0",
+    "lodash": "^4.17.11",
     "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
-    "shortid": "^2.2.8",
-    "sinon": "^5.1.0",
-    "sinon-mongoose": "^2.0.2"
+    "nyc": "^13.0.1",
+    "shortid": "^2.2.13",
+    "sinon": "^6.3.4",
+    "sinon-mongoose": "^2.2.1"
   }
 }
