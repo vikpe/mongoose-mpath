@@ -630,7 +630,13 @@ describe('mpath plugin', function() {
         }
       ];
 
-      Location.getChildrenTree(function(error, locationTree) {
+      var args = {
+        options: {
+          lean: 1
+        }
+      };
+
+      Location.getChildrenTree(args, function(error, locationTree) {
         should.not.exist(error);
         locationTree.should.eql(expectedTree);
         done();
@@ -639,7 +645,10 @@ describe('mpath plugin', function() {
 
     it('static method - args', function(done) {
       var args = {
-        fields: '_id name parent path'
+        fields: '_id name parent path',
+        options: {
+          lean: 1
+        }
       };
 
       var expectedTree = [
@@ -697,7 +706,10 @@ describe('mpath plugin', function() {
 
     it('includes path and parent fields', function(done) {
       var args = {
-        fields: '_id name'
+        fields: '_id name',
+        options: {
+          lean: 1
+        }
       };
 
       var expectedTree = [
@@ -727,7 +739,10 @@ describe('mpath plugin', function() {
 
     it('fields as object', function(done) {
       var args = {
-        fields: {_id: 1, name: 1}
+        fields: {_id: 1, name: 1},
+        options: {
+          lean: 1
+        }
       };
 
       var expectedTree = [
