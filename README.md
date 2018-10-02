@@ -25,23 +25,21 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 
 **Example setup**
 ```javascript
-var Mongoose = require('mongoose');
-var MpathPlugin = require('mongoose-mpath');
+import Mongoose from 'mongoose';
+import MpathPlugin from 'mongoose-mpath';
 
-var LocationSchema = new Mongoose.Schema({name: String});
+const LocationSchema = new Mongoose.Schema({name: String});
 LocationSchema.plugin(MpathPlugin);
 
-var LocationModel = Mongoose.model('Location', LocationSchema);
+const LocationModel = Mongoose.model('Location', LocationSchema);
 
-var europe = new LocationModel({name: 'europe'});
-var sweden = new LocationModel({name: 'sweden', parent: europe});
-var stockholm = new LocationModel({name: 'stockholm', parent: sweden});
+const europe = new LocationModel({name: 'europe'});
+const sweden = new LocationModel({name: 'sweden', parent: europe});
+const stockholm = new LocationModel({name: 'stockholm', parent: sweden});
 
-europe.save(function() {
-  sweden.save(function() {
-    stockholm.save();
-  });
-});
+await europe.save();
+await sweden.save();
+await stockholm.save();
 ```
 
 At this point in mongoDB you will have documents similar to
@@ -86,11 +84,11 @@ europe
 ```
 
 ### getAncestors()
-Returns ancestors of a document.
+Returns ancestors of a document. Returns a promise.
 
 **Signature**
 ```
-document.getAncestors(conditions, [fields], [options], callback)
+document.getAncestors(conditions, [fields], [options])
 ```
 
 **Arguments**
@@ -98,17 +96,16 @@ document.getAncestors(conditions, [fields], [options], callback)
 
 **Example**
 ```javascript
-stockholm.getAncestors({}, function(error, ancestors) {
-  // ancestors is an array of [europe, sweden] 
-});
+const ancestors = await stockholm.getAncestors({});
+// ancestors is an array of [europe, sweden]
 ```
 
 ### getAllChildren()
-Returns all children of a document.
+Returns all children of a document. Returns a promise.
 
 **Signature**
 ```
-document.getAllChildren(conditions, [fields], [options], callback)
+document.getAllChildren(conditions, [fields], [options])
 ```
 
 **Arguments**
@@ -116,22 +113,20 @@ document.getAllChildren(conditions, [fields], [options], callback)
 
 **Example**
 ```javascript
-sweden.getAllChildren({}, function(error, ancestors) {
-  // ancestors is an array of [stockholm, globe] 
-});
+const children = await sweden.getAllChildren({});
+// ancestors is an array of [stockholm, globe]
 
-stockholm.getAllChildren({}, function(error, ancestors) {
-  // ancestors is an array of [globe] 
-});
+const children = await stockholm.getAllChildren({});
+// ancestors is an array of [globe]
 ```
 
 ### getChildrenTree()
-Returns all children of a document formatted as a tree hierarchy.
+Returns all children of a document formatted as a tree hierarchy.  Returns a promise.
 
 **Signature**
 ```
-document.getChildrenTree([args], callback)                  // as method
-document.getChildrenTree(rootDocument, [args], callback)    // as static
+document.getChildrenTree([args])    // as method
+document.getChildrenTree([args])    // as static
 ```
 
 **Arguments**
@@ -143,12 +138,13 @@ document.getChildrenTree(rootDocument, [args], callback)    // as static
         (Object) options: {},            // mongoose query options
         (String) populate: '',           // string to passed to populate()
         (int) minLevel: 1,               // minimum level to search from
+        (Mongoose.document) rootDoc      // mongoose document
     }
     ```
-    
+
     Example
     ```javascript
-    var args = {
+    const args = {
       filters: {author: 'vikpe'},
       fields: '_id name',
       options: false,
@@ -156,34 +152,32 @@ document.getChildrenTree(rootDocument, [args], callback)    // as static
       minLevel: 2
     }
     ```
-* (Function) `callback`
 
 **Example**
 ```javascript
-sweden.getChildrenTree(function(error, tree) {
-  // tree is an array similar to
-  /*
-  [
-    {
-      'name': 'sthlm',
-      'children': [
-        {
-          'name': 'globe',
-          'children': [],          
-        }
-      ],
-    }
-  ]
-  */
-});
+const tree = await sweden.getChildrenTree();
+// tree is an array similar to
+/*
+[
+  {
+    'name': 'sthlm',
+    'children': [
+      {
+        'name': 'globe',
+        'children': [],          
+      }
+    ],
+  }
+]
+*/
 ```
 
 ### getImmediateChildren()
-Returns immediate children of a document.
+Returns immediate children of a document. Returns a promise.
 
 **Signature**
 ```
-document.getImmediateChildren(conditions, [fields], [options], callback)
+document.getImmediateChildren(conditions, [fields], [options])
 ```
 
 **Arguments**
@@ -191,13 +185,11 @@ document.getImmediateChildren(conditions, [fields], [options], callback)
 
 **Example**
 ```javascript
-europe.getImmediateChildren({}, function(error, children) {
-  // children is an array of [norway, sweden] 
-});
+const children = await europe.getImmediateChildren({});
+// children is an array of [norway, sweden]
 
-sweden.getImmediateChildren({}, function(error, children) {
-  // children is an array of [stockholm] 
-});
+const children = await sweden.getImmediateChildren({});
+// children is an array of [stockholm]
 ```
 
 ### getParent()
@@ -205,7 +197,7 @@ Returns parent of a document.
 
 **Signature**
 ```
-document.getParent([fields], [options], callback)
+document.getParent([fields], [options])
 ```
 
 **Arguments**
@@ -213,13 +205,11 @@ document.getParent([fields], [options], callback)
 
 **Example**
 ```javascript
-sweden.getParent(function(error, parent) {
-  // parent is an object equal to europe
-});
+const parent = await sweden.getParent();
+// parent is an object equal to europe
 
-stockholm.getParent(function(error, parent) {
-  // parent is an object equal to sweden
-});
+const parent = await stockholm.getParent();
+// parent is an object equal to sweden
 ```
 
 ### level
