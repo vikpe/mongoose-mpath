@@ -202,6 +202,20 @@ describe('mpath plugin', () => {
         Globe: 'af.se.sthlm.globe',
       });
     });
+
+    it('should allow empty parent when using string as ID type', async function() {
+      const randomId = () => _.shuffle(_.range(0, 9)).join('');
+      const LocationSchema = new mongoose.Schema({
+        _id: {type: String, default: randomId},
+        name: String,
+      });
+      LocationSchema.plugin(MpathPlugin, {idType: String});
+      const LocationModel = mongoose.model('LocationWithStringAsIdType', LocationSchema);
+      await LocationModel.deleteMany({});
+
+      const world = new LocationModel({_id: 'wo', name: 'World', parent: ''});
+      await world.save();
+    });
   });
 
   describe('pre remove middleware', () => {
