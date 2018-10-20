@@ -7,6 +7,9 @@ npm install mongoose-mpath
 ```
 
 ## Setup
+> **Important note**
+>
+> This plugins adds `parent` and `path` fields to the schema. You should not define them in the schema which the plugin is enabled on.
 
 **Semantics**
 ```javascript
@@ -22,6 +25,9 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
   idType:        Schema.ObjectId   // Type used for model id
 }
 ```
+
+**Note**
+This plugins ads
 
 **Example setup**
 ```javascript
@@ -63,7 +69,7 @@ At this point in mongoDB you will have documents similar to
 }
 ```
 
-The path is used for recursive methods and is kept up to date by the plugin if the parent is changed.
+The `path` is used for recursive methods and is kept up to date by the plugin if the `parent` is changed.
 
 ## API
 * [`getAncestors()`](#getancestors)
