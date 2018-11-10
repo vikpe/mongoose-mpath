@@ -46,6 +46,7 @@
     "lodash": "^4.17.11",
     "mocha": "^5.2.0",
     "nyc": "^13.0.1",
+    "prettier": "^1.15.2",
     "shortid": "^2.2.13",
     "sinon": "^7.0.0",
     "sinon-mongoose": "^2.2.1"
