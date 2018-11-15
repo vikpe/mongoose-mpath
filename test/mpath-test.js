@@ -88,10 +88,10 @@ describe('mpath plugin', () => {
     await Location.deleteMany({});
   });
 
-  before(async () => await Location.deleteMany({}));
-  after(async () => await Location.deleteMany({}));
-  beforeEach(async () => await createLocations());
-  afterEach(async () => await Location.deleteMany({}));
+  beforeEach(async () => {
+    await Location.deleteMany({});
+    await createLocations();
+  });
 
   describe('setup', () => {
     it('should add fields to schema (default options)', () => {
