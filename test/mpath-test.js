@@ -15,7 +15,7 @@ mongoose.set('useCreateIndex', true);
 
 describe('mpath plugin', () => {
   // Utils
-  const locationsToPathObject = (locations) =>
+  const locationsToPathObject = locations =>
     locations.reduce((result, location) => {
       result[location.name] = location.path;
       return result;
@@ -24,7 +24,7 @@ describe('mpath plugin', () => {
   // Mongoose
   let dbConnection;
   let Location;
-  let LocationSchema = new mongoose.Schema({_id: String, name: String});
+  let LocationSchema = new mongoose.Schema({ _id: String, name: String });
 
   LocationSchema.plugin(MpathPlugin, {
     idType: String,
@@ -51,16 +51,16 @@ describe('mpath plugin', () => {
   let norway;
 
   const createLocations = async () => {
-    africa = new Location({_id: 'af', name: 'Africa'});
-    europe = new Location({_id: 'eu', name: 'Europe'});
-    norway = new Location({_id: 'no', name: 'Norway', parent: europe});
-    sweden = new Location({_id: 'se', name: 'Sweden', parent: europe});
+    africa = new Location({ _id: 'af', name: 'Africa' });
+    europe = new Location({ _id: 'eu', name: 'Europe' });
+    norway = new Location({ _id: 'no', name: 'Norway', parent: europe });
+    sweden = new Location({ _id: 'se', name: 'Sweden', parent: europe });
     stockholm = new Location({
       _id: 'sthlm',
       name: 'Stockholm',
       parent: sweden,
     });
-    globe = new Location({_id: 'globe', name: 'Globe', parent: stockholm});
+    globe = new Location({ _id: 'globe', name: 'Globe', parent: stockholm });
 
     await Location.deleteMany();
     await africa.save();
@@ -74,13 +74,13 @@ describe('mpath plugin', () => {
   // Set up the fixture
   before(async () => {
     dbConnection = await mongoose.connect(
-        'mongodb://localhost:27017/mongoose-path-tree',
-        {
-          connectTimeoutMS: 3000,
-          keepAlive: 2000,
-          reconnectTries: 30,
-          useNewUrlParser: true,
-        }
+      'mongodb://localhost:27017/mongoose-path-tree',
+      {
+        connectTimeoutMS: 3000,
+        keepAlive: 2000,
+        reconnectTries: 30,
+        useNewUrlParser: true,
+      }
     );
 
     Location = mongoose.model('Location', LocationSchema);
@@ -93,12 +93,12 @@ describe('mpath plugin', () => {
 
   describe('setup', () => {
     it('should add fields to schema (default options)', () => {
-      const DefaultLocationSchema = new mongoose.Schema({name: String});
+      const DefaultLocationSchema = new mongoose.Schema({ name: String });
       DefaultLocationSchema.plugin(MpathPlugin);
 
       const LocationModel = dbConnection.model(
-          'SomeLocation',
-          DefaultLocationSchema
+        'SomeLocation',
+        DefaultLocationSchema
       );
 
       const schemaPaths = LocationModel.schema.paths;
@@ -112,7 +112,7 @@ describe('mpath plugin', () => {
       const randomId = () => _.shuffle(_.range(0, 9)).join('');
 
       const CustomLocationSchema = new mongoose.Schema({
-        _id: {type: String, default: randomId},
+        _id: { type: String, default: randomId },
         name: String,
       });
 
@@ -124,8 +124,8 @@ describe('mpath plugin', () => {
       CustomLocationSchema.plugin(MpathPlugin, pluginOptions);
 
       const CustomLocationModel = mongoose.model(
-          'SomeOtherLocation',
-          CustomLocationSchema
+        'SomeOtherLocation',
+        CustomLocationSchema
       );
 
       const schemaPaths = CustomLocationModel.schema.paths;
@@ -134,7 +134,7 @@ describe('mpath plugin', () => {
       schemaPaths.parent.options.type.should.eql(String);
 
       // check path separator
-      const parentLocation = new CustomLocationModel({name: 'Super City'});
+      const parentLocation = new CustomLocationModel({ name: 'Super City' });
       const childLocation = new CustomLocationModel({
         name: 'Sub City',
         parent: parentLocation,
@@ -149,7 +149,7 @@ describe('mpath plugin', () => {
   });
 
   describe('pre save middleware', () => {
-    it('should not perform any operations when document isn\'t new or hasn\'t changed parent', async () => {
+    it("should not perform any operations when document isn't new or hasn't changed parent", async () => {
       sinon.spy(sweden.collection, 'findOne');
       sinon.spy(sweden.collection, 'updateMany');
 
@@ -200,14 +200,17 @@ describe('mpath plugin', () => {
     it('should allow empty parent when using string as ID type', async function() {
       const randomId = () => _.shuffle(_.range(0, 9)).join('');
       const LocationSchema = new mongoose.Schema({
-        _id: {type: String, default: randomId},
+        _id: { type: String, default: randomId },
         name: String,
       });
-      LocationSchema.plugin(MpathPlugin, {idType: String});
-      const LocationModel = mongoose.model('LocationWithStringAsIdType', LocationSchema);
+      LocationSchema.plugin(MpathPlugin, { idType: String });
+      const LocationModel = mongoose.model(
+        'LocationWithStringAsIdType',
+        LocationSchema
+      );
       await LocationModel.deleteMany({});
 
-      const world = new LocationModel({_id: 'wo', name: 'World', parent: ''});
+      const world = new LocationModel({ _id: 'wo', name: 'World', parent: '' });
       await world.save();
     });
   });
@@ -281,7 +284,7 @@ describe('mpath plugin', () => {
         // re-setup schema, model, database
         await mongoose.connection.close();
 
-        LocationSchema = new mongoose.Schema({_id: String, name: String});
+        LocationSchema = new mongoose.Schema({ _id: String, name: String });
         LocationSchema.plugin(MpathPlugin, {
           idType: String,
           pathSeparator: '#',
@@ -289,13 +292,13 @@ describe('mpath plugin', () => {
         });
 
         dbConnection = await mongoose.connect(
-            'mongodb://localhost:27017/mongoose-path-tree',
-            {
-              connectTimeoutMS: 3000,
-              keepAlive: 2000,
-              reconnectTries: 30,
-              useNewUrlParser: true,
-            }
+          'mongodb://localhost:27017/mongoose-path-tree',
+          {
+            connectTimeoutMS: 3000,
+            keepAlive: 2000,
+            reconnectTries: 30,
+            useNewUrlParser: true,
+          }
         );
 
         try {
@@ -342,67 +345,67 @@ describe('mpath plugin', () => {
       const options = {};
 
       const locations = await europe.getImmediateChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Norway', 'Sweden']);
+      locations.map(l => l.name).should.eql(['Norway', 'Sweden']);
     });
 
     it('using conditions (object)', async () => {
-      const conditions = {name: 'Norway'};
+      const conditions = { name: 'Norway' };
       const fields = null;
       const options = {};
 
       const locations = await europe.getImmediateChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Norway']);
+      locations.map(l => l.name).should.eql(['Norway']);
     });
 
     it('using conditions ($query)', async () => {
-      const conditions = {$query: {name: 'Norway'}};
+      const conditions = { $query: { name: 'Norway' } };
       const fields = null;
       const options = {};
 
       const locations = await europe.getImmediateChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Norway']);
+      locations.map(l => l.name).should.eql(['Norway']);
     });
 
     it('using fields', async () => {
       const conditions = {};
       const fields = '_id';
-      const options = {lean: true};
+      const options = { lean: true };
 
       const locations = await europe.getImmediateChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
-      locations.should.eql([{_id: 'no'}, {_id: 'se'}]);
+      locations.should.eql([{ _id: 'no' }, { _id: 'se' }]);
     });
 
     it('using options (sort)', async () => {
       const conditions = {};
       const fields = '_id';
       const options = {
-        sort: {name: -1},
+        sort: { name: -1 },
         lean: true,
       };
 
       const locations = await europe.getImmediateChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
     });
   });
@@ -414,60 +417,60 @@ describe('mpath plugin', () => {
       const options = {};
 
       const locations = await europe.getAllChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
       locations
-          .map((l) => l.name)
-          .should.eql(['Norway', 'Sweden', 'Stockholm', 'Globe']);
+        .map(l => l.name)
+        .should.eql(['Norway', 'Sweden', 'Stockholm', 'Globe']);
     });
 
     it('using conditions (object)', async () => {
-      const conditions = {name: 'Stockholm'};
+      const conditions = { name: 'Stockholm' };
       const fields = null;
       const options = {};
 
       const locations = await europe.getAllChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Stockholm']);
+      locations.map(l => l.name).should.eql(['Stockholm']);
     });
 
     it('using conditions ($query)', async () => {
-      const conditions = {$query: {name: 'Stockholm'}};
+      const conditions = { $query: { name: 'Stockholm' } };
       const fields = null;
       const options = {};
 
       const locations = await europe.getAllChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Stockholm']);
+      locations.map(l => l.name).should.eql(['Stockholm']);
     });
 
     it('using fields', async () => {
       const conditions = {};
       const fields = '_id';
-      const options = {lean: true};
+      const options = { lean: true };
 
       const locations = await europe.getAllChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
       locations.should.eql([
-        {_id: 'no'},
-        {_id: 'se'},
-        {_id: 'sthlm'},
-        {_id: 'globe'},
+        { _id: 'no' },
+        { _id: 'se' },
+        { _id: 'sthlm' },
+        { _id: 'globe' },
       ]);
     });
 
@@ -475,21 +478,21 @@ describe('mpath plugin', () => {
       const conditions = {};
       const fields = '_id';
       const options = {
-        sort: {name: -1},
+        sort: { name: -1 },
         lean: true,
       };
 
       const locations = await europe.getAllChildren(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
       locations.should.eql([
-        {_id: 'se'},
-        {_id: 'sthlm'},
-        {_id: 'no'},
-        {_id: 'globe'},
+        { _id: 'se' },
+        { _id: 'sthlm' },
+        { _id: 'no' },
+        { _id: 'globe' },
       ]);
     });
   });
@@ -497,14 +500,14 @@ describe('mpath plugin', () => {
   describe('getParent()', () => {
     it('should get the parent', async () => {
       const fields = 'name';
-      const options = {lean: true};
+      const options = { lean: true };
 
       const expectedParents = [
         [europe, null],
-        [norway, {_id: 'eu', name: 'Europe'}],
-        [sweden, {_id: 'eu', name: 'Europe'}],
-        [stockholm, {_id: 'se', name: 'Sweden'}],
-        [globe, {_id: 'sthlm', name: 'Stockholm'}],
+        [norway, { _id: 'eu', name: 'Europe' }],
+        [sweden, { _id: 'eu', name: 'Europe' }],
+        [stockholm, { _id: 'se', name: 'Sweden' }],
+        [globe, { _id: 'sthlm', name: 'Stockholm' }],
         [africa, null],
       ];
 
@@ -513,14 +516,14 @@ describe('mpath plugin', () => {
         const expectedParent = arr[1];
 
         child
-            .getParent(fields, options, (error, parent) => {
-              if (null === expectedParent) {
-                should.not.exist(parent);
-              } else {
-                parent.should.eql(expectedParent);
-              }
-            })
-            .then(() => asyncDone());
+          .getParent(fields, options, (error, parent) => {
+            if (null === expectedParent) {
+              should.not.exist(parent);
+            } else {
+              parent.should.eql(expectedParent);
+            }
+          })
+          .then(() => asyncDone());
       });
     });
   });
@@ -532,71 +535,71 @@ describe('mpath plugin', () => {
       const options = {};
 
       const locations = await stockholm.getAncestors(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Europe', 'Sweden']);
+      locations.map(l => l.name).should.eql(['Europe', 'Sweden']);
     });
 
     it('using conditions (plain object)', async () => {
-      const conditions = {name: 'Europe'};
+      const conditions = { name: 'Europe' };
       const fields = null;
       const options = {};
 
       const locations = await stockholm.getAncestors(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Europe']);
+      locations.map(l => l.name).should.eql(['Europe']);
     });
 
     it('using conditions ($query)', async () => {
-      const conditions = {$query: {name: 'Europe'}};
+      const conditions = { $query: { name: 'Europe' } };
       const fields = null;
       const options = {};
 
       const locations = await stockholm.getAncestors(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.map((l) => l.name).should.eql(['Europe']);
+      locations.map(l => l.name).should.eql(['Europe']);
     });
 
     it('using fields', async () => {
       const conditions = {};
       const fields = '_id';
-      const options = {lean: true};
+      const options = { lean: true };
 
       const locations = await stockholm.getAncestors(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.should.eql([{_id: 'eu'}, {_id: 'se'}]);
+      locations.should.eql([{ _id: 'eu' }, { _id: 'se' }]);
     });
 
     it('using options (sort)', async () => {
       const conditions = {};
       const fields = '_id';
       const options = {
-        sort: {name: -1},
+        sort: { name: -1 },
         lean: true,
       };
 
       const locations = await stockholm.getAncestors(
-          conditions,
-          fields,
-          options
+        conditions,
+        fields,
+        options
       );
 
-      locations.should.eql([{_id: 'se'}, {_id: 'eu'}]);
+      locations.should.eql([{ _id: 'se' }, { _id: 'eu' }]);
     });
   });
 
@@ -661,7 +664,7 @@ describe('mpath plugin', () => {
     it('static method - args', async () => {
       const args = {
         fields: '_id name parent path',
-        options: {lean: true},
+        options: { lean: true },
       };
 
       const expectedTree = [
@@ -718,7 +721,7 @@ describe('mpath plugin', () => {
     it('includes path and parent fields', async () => {
       const args = {
         fields: '_id name',
-        options: {lean: true},
+        options: { lean: true },
       };
 
       const expectedTree = [
@@ -745,8 +748,8 @@ describe('mpath plugin', () => {
 
     it('fields as object', async () => {
       const args = {
-        fields: {_id: 1, name: 1},
-        options: {lean: true},
+        fields: { _id: 1, name: 1 },
+        options: { lean: true },
       };
 
       const expectedTree = [
@@ -784,7 +787,11 @@ describe('mpath plugin', () => {
     });
 
     it('should filter by minLevel', async () => {
-      const args = { fields: { _id: 1, name: 1 }, options: { lean: true }, minLevel: 3 };
+      const args = {
+        fields: { _id: 1, name: 1 },
+        options: { lean: true },
+        minLevel: 3,
+      };
       const tree = await Location.getChildrenTree(args);
 
       tree.should.eql([
@@ -823,11 +830,16 @@ describe('mpath plugin', () => {
 
     it('should createTree', () => {
       const nodes = [
-        {_id: 'eu', name: 'Europe', parent: '', path: 'eu'},
-        {_id: 'no', name: 'Norway', parent: 'eu', path: 'eu#no'},
-        {_id: 'se', name: 'Sweden', parent: 'eu', path: 'eu#se'},
-        {_id: 'sthlm', name: 'Stockholm', parent: 'se', path: 'eu#se#sthlm'},
-        {_id: 'globe', name: 'Globe', parent: 'sthlm', path: 'eu#se#sthlm#globe'},
+        { _id: 'eu', name: 'Europe', parent: '', path: 'eu' },
+        { _id: 'no', name: 'Norway', parent: 'eu', path: 'eu#no' },
+        { _id: 'se', name: 'Sweden', parent: 'eu', path: 'eu#se' },
+        { _id: 'sthlm', name: 'Stockholm', parent: 'se', path: 'eu#se#sthlm' },
+        {
+          _id: 'globe',
+          name: 'Globe',
+          parent: 'sthlm',
+          path: 'eu#se#sthlm#globe',
+        },
       ];
 
       const expectedTree = [
