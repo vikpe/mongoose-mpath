@@ -124,7 +124,7 @@ describe('mpath plugin', () => {
 
       const pluginOptions = {
         idType: String,
-        pathSeparator: '.',
+        pathSeparator: '|',
       };
 
       CustomLocationSchema.plugin(MpathPlugin, pluginOptions);
@@ -149,7 +149,7 @@ describe('mpath plugin', () => {
       await parentLocation.save();
       await childLocation.save();
 
-      const expectedPath = `${parentLocation._id.toString()}.${childLocation._id.toString()}`;
+      const expectedPath = `${parentLocation._id.toString()}|${childLocation._id.toString()}`;
       childLocation.path.should.equal(expectedPath);
     });
   });
@@ -181,9 +181,9 @@ describe('mpath plugin', () => {
       africa.path.should.equal('af');
       europe.path.should.equal('eu');
       norway.path.should.equal('eu#no');
-      sweden.path.should.equal('eu.se');
-      stockholm.path.should.equal('eu.se#sthlm');
-      globe.path.should.equal('eu.se#sthlm#globe');
+      sweden.path.should.equal('eu#se');
+      stockholm.path.should.equal('eu#se#sthlm');
+      globe.path.should.equal('eu#se#sthlm#globe');
     });
 
     it('should update child paths', async () => {
@@ -230,8 +230,8 @@ describe('mpath plugin', () => {
         Africa: 'af',
         Europe: 'eu',
         Norway: 'eu#no',
-        Stockholm: 'eu.se#sthlm',
-        Globe: 'eu.se#sthlm#globe',
+        Stockholm: 'eu#se#sthlm',
+        Globe: 'eu#se#sthlm#globe',
       });
     });
 
@@ -245,9 +245,9 @@ describe('mpath plugin', () => {
         pathObject.should.eql({
           Africa: 'af',
           Europe: 'eu',
-          Sweden: 'eu.se',
-          Stockholm: 'eu.se#sthlm',
-          Globe: 'eu.se#sthlm#globe',
+          Sweden: 'eu#se',
+          Stockholm: 'eu#se#sthlm',
+          Globe: 'eu#se#sthlm#globe',
         });
       });
 
@@ -261,8 +261,8 @@ describe('mpath plugin', () => {
           Africa: 'af',
           Europe: 'eu',
           Norway: 'eu#no',
-          Stockholm: 'eu.sthlm',
-          Globe: 'eu.sthlm#globe',
+          Stockholm: 'eu#sthlm',
+          Globe: 'eu#sthlm#globe',
         });
       });
 
@@ -290,7 +290,7 @@ describe('mpath plugin', () => {
         LocationSchema = new mongoose.Schema({_id: String, name: String});
         LocationSchema.plugin(MpathPlugin, {
           idType: String,
-          pathSeparator: '.',
+          pathSeparator: '#',
           onDelete: 'DELETE', // <- updated plugin option
         });
 
@@ -642,17 +642,17 @@ describe('mpath plugin', () => {
                       children: [],
                       name: 'Globe',
                       parent: 'sthlm',
-                      path: 'eu.se#sthlm#globe',
+                      path: 'eu#se#sthlm#globe',
                     },
                   ],
                   name: 'Stockholm',
                   parent: 'se',
-                  path: 'eu.se#sthlm',
+                  path: 'eu#se#sthlm',
                 },
               ],
               name: 'Sweden',
               parent: 'eu',
-              path: 'eu.se',
+              path: 'eu#se',
             },
           ],
           name: 'Europe',
@@ -694,20 +694,20 @@ describe('mpath plugin', () => {
               _id: 'se',
               name: 'Sweden',
               parent: 'eu',
-              path: 'eu.se',
+              path: 'eu#se',
               children: [
                 {
                   _id: 'sthlm',
                   name: 'Stockholm',
                   parent: 'se',
-                  path: 'eu.se#sthlm',
+                  path: 'eu#se#sthlm',
                   children: [
                     {
                       _id: 'globe',
                       children: [],
                       name: 'Globe',
                       parent: 'sthlm',
-                      path: 'eu.se#sthlm#globe',
+                      path: 'eu#se#sthlm#globe',
                     },
                   ],
                 },
@@ -736,12 +736,12 @@ describe('mpath plugin', () => {
               children: [],
               name: 'Globe',
               parent: 'sthlm',
-              path: 'eu.se#sthlm#globe',
+              path: 'eu#se#sthlm#globe',
             },
           ],
           name: 'Stockholm',
           parent: 'se',
-          path: 'eu.se#sthlm',
+          path: 'eu#se#sthlm',
         },
       ];
 
@@ -764,12 +764,12 @@ describe('mpath plugin', () => {
               children: [],
               name: 'Globe',
               parent: 'sthlm',
-              path: 'eu.se#sthlm#globe',
+              path: 'eu#se#sthlm#globe',
             },
           ],
           name: 'Stockholm',
           parent: 'se',
-          path: 'eu.se#sthlm',
+          path: 'eu#se#sthlm',
         },
       ];
 
