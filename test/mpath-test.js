@@ -84,8 +84,6 @@ describe('mpath plugin', () => {
     );
 
     Location = mongoose.model('Location', LocationSchema);
-
-    await Location.deleteMany({});
   });
 
   beforeEach(async () => {
@@ -771,6 +769,97 @@ describe('mpath plugin', () => {
 
       const locationTree = await sweden.getChildrenTree(args);
       locationTree.should.eql(expectedTree);
+    });
+
+    it('options.lean=false should return Mongoose Documents', async () => {
+      const args = { fields: { _id: 1, name: 1 }, options: { lean: false } };
+
+      return sweden.getChildrenTree(args).then(tree => {
+        tree[0].name.should.eql('Stockholm');
+
+        tree[0].getChildrenTree(args).then(subtree => {
+          subtree[0].name.should.eql('Globe');
+        });
+      });
+    });
+
+    it('should filter by minLevel', async () => {
+      const args = { fields: { _id: 1, name: 1 }, options: { lean: true }, minLevel: 3 };
+      const tree = await europe.getChildrenTree(args);
+
+      tree.should.eql([
+        {
+          _id: 'sthlm',
+          name: 'Stockholm',
+          parent: 'se',
+          path: 'eu#se#sthlm',
+          children: [
+            {
+              _id: 'globe',
+              children: [],
+              name: 'Globe',
+              parent: 'sthlm',
+              path: 'eu#se#sthlm#globe',
+            },
+          ],
+        },
+      ]);
+    });
+  });
+
+  describe('util', () => {
+    it('should createTree', () => {
+      const nodes = [
+        {_id: 'eu', name: 'Europe', parent: '', path: 'eu'},
+        {_id: 'no', name: 'Norway', parent: 'eu', path: 'eu#no'},
+        {_id: 'se', name: 'Sweden', parent: 'eu', path: 'eu#se'},
+        {_id: 'sthlm', name: 'Stockholm', parent: 'se', path: 'eu#se#sthlm'},
+        {_id: 'globe', name: 'Globe', parent: 'sthlm', path: 'eu#se#sthlm#globe'},
+      ];
+
+      const expectedTree = [
+        {
+          _id: 'eu',
+          name: 'Europe',
+          parent: '',
+          path: 'eu',
+          children: [
+            {
+              _id: 'no',
+              name: 'Norway',
+              parent: 'eu',
+              path: 'eu#no',
+              children: [],
+            },
+            {
+              _id: 'se',
+              name: 'Sweden',
+              parent: 'eu',
+              path: 'eu#se',
+              children: [
+                {
+                  _id: 'sthlm',
+                  name: 'Stockholm',
+                  parent: 'se',
+                  path: 'eu#se#sthlm',
+                  children: [
+                    {
+                      _id: 'globe',
+                      name: 'Globe',
+                      parent: 'sthlm',
+                      path: 'eu#se#sthlm#globe',
+                      children: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ];
+
+      const result = MpathPlugin.util.listToTree(nodes);
+      result.should.eql(expectedTree);
     });
   });
 });
