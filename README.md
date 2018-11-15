@@ -132,7 +132,7 @@ Returns all children of a document formatted as a tree hierarchy.  Returns a pro
 **Signature**
 ```
 document.getChildrenTree([args])    // as method
-document.getChildrenTree([args])    // as static
+model.getChildrenTree([args])       // as static
 ```
 
 **Arguments**
