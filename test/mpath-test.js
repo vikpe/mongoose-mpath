@@ -40,14 +40,14 @@ describe('mpath plugin', () => {
     norway
     sweden
       stockholm
-        globe
+        skansen
   */
 
   let africa;
   let europe;
   let sweden;
   let stockholm;
-  let globe;
+  let skansen;
   let norway;
 
   const createLocations = async () => {
@@ -60,7 +60,7 @@ describe('mpath plugin', () => {
       name: 'Stockholm',
       parent: sweden,
     });
-    globe = new Location({ _id: 'globe', name: 'Globe', parent: stockholm });
+    skansen = new Location({ _id: 'skansen', name: 'Skansen', parent: stockholm });
 
     await Location.deleteMany();
     await africa.save();
@@ -68,7 +68,7 @@ describe('mpath plugin', () => {
     await norway.save();
     await sweden.save();
     await stockholm.save();
-    await globe.save();
+    await skansen.save();
   };
 
   // Set up the fixture
@@ -168,7 +168,7 @@ describe('mpath plugin', () => {
       norway.parent.should.equal(europe._id);
       sweden.parent.should.equal(europe._id);
       stockholm.parent.should.equal(sweden._id);
-      globe.parent.should.equal(stockholm._id);
+      skansen.parent.should.equal(stockholm._id);
     });
 
     it('should set path', () => {
@@ -177,7 +177,7 @@ describe('mpath plugin', () => {
       norway.path.should.equal('eu#no');
       sweden.path.should.equal('eu#se');
       stockholm.path.should.equal('eu#se#sthlm');
-      globe.path.should.equal('eu#se#sthlm#globe');
+      skansen.path.should.equal('eu#se#sthlm#skansen');
     });
 
     it('should update child paths', async () => {
@@ -193,7 +193,7 @@ describe('mpath plugin', () => {
         Norway: 'eu#no',
         Sweden: 'af#se',
         Stockholm: 'af#se#sthlm',
-        Globe: 'af#se#sthlm#globe',
+        Skansen: 'af#se#sthlm#skansen',
       });
     });
 
@@ -228,7 +228,7 @@ describe('mpath plugin', () => {
         Europe: 'eu',
         Norway: 'eu#no',
         Stockholm: 'eu#se#sthlm',
-        Globe: 'eu#se#sthlm#globe',
+        Skansen: 'eu#se#sthlm#skansen',
       });
     });
 
@@ -244,7 +244,7 @@ describe('mpath plugin', () => {
           Europe: 'eu',
           Sweden: 'eu#se',
           Stockholm: 'eu#se#sthlm',
-          Globe: 'eu#se#sthlm#globe',
+          Skansen: 'eu#se#sthlm#skansen',
         });
       });
 
@@ -259,7 +259,7 @@ describe('mpath plugin', () => {
           Europe: 'eu',
           Norway: 'eu#no',
           Stockholm: 'eu#sthlm',
-          Globe: 'eu#sthlm#globe',
+          Skansen: 'eu#sthlm#skansen',
         });
       });
 
@@ -274,7 +274,7 @@ describe('mpath plugin', () => {
           Norway: 'no',
           Sweden: 'se',
           Stockholm: 'se#sthlm',
-          Globe: 'se#sthlm#globe',
+          Skansen: 'se#sthlm#skansen',
         });
       });
     });
@@ -334,7 +334,7 @@ describe('mpath plugin', () => {
       norway.level.should.equal(2);
       sweden.level.should.equal(2);
       stockholm.level.should.equal(3);
-      globe.level.should.equal(4);
+      skansen.level.should.equal(4);
     });
   });
 
@@ -424,7 +424,7 @@ describe('mpath plugin', () => {
 
       locations
         .map(l => l.name)
-        .should.eql(['Norway', 'Sweden', 'Stockholm', 'Globe']);
+        .should.eql(['Norway', 'Sweden', 'Stockholm', 'Skansen']);
     });
 
     it('using conditions (object)', async () => {
@@ -470,7 +470,7 @@ describe('mpath plugin', () => {
         { _id: 'no' },
         { _id: 'se' },
         { _id: 'sthlm' },
-        { _id: 'globe' },
+        { _id: 'skansen' },
       ]);
     });
 
@@ -491,8 +491,8 @@ describe('mpath plugin', () => {
       locations.should.eql([
         { _id: 'se' },
         { _id: 'sthlm' },
+        { _id: 'skansen' },
         { _id: 'no' },
-        { _id: 'globe' },
       ]);
     });
   });
@@ -507,7 +507,7 @@ describe('mpath plugin', () => {
         [norway, { _id: 'eu', name: 'Europe' }],
         [sweden, { _id: 'eu', name: 'Europe' }],
         [stockholm, { _id: 'se', name: 'Sweden' }],
-        [globe, { _id: 'sthlm', name: 'Stockholm' }],
+        [skansen, { _id: 'sthlm', name: 'Stockholm' }],
         [africa, null],
       ];
 
@@ -635,11 +635,11 @@ describe('mpath plugin', () => {
                   children: [
                     {
                       __v: 0,
-                      _id: 'globe',
+                      _id: 'skansen',
                       children: [],
-                      name: 'Globe',
+                      name: 'Skansen',
                       parent: 'sthlm',
-                      path: 'eu#se#sthlm#globe',
+                      path: 'eu#se#sthlm#skansen',
                     },
                   ],
                   name: 'Stockholm',
@@ -700,11 +700,11 @@ describe('mpath plugin', () => {
                   path: 'eu#se#sthlm',
                   children: [
                     {
-                      _id: 'globe',
+                      _id: 'skansen',
                       children: [],
-                      name: 'Globe',
+                      name: 'Skansen',
                       parent: 'sthlm',
-                      path: 'eu#se#sthlm#globe',
+                      path: 'eu#se#sthlm#skansen',
                     },
                   ],
                 },
@@ -729,11 +729,11 @@ describe('mpath plugin', () => {
           _id: 'sthlm',
           children: [
             {
-              _id: 'globe',
+              _id: 'skansen',
               children: [],
-              name: 'Globe',
+              name: 'Skansen',
               parent: 'sthlm',
-              path: 'eu#se#sthlm#globe',
+              path: 'eu#se#sthlm#skansen',
             },
           ],
           name: 'Stockholm',
@@ -757,11 +757,11 @@ describe('mpath plugin', () => {
           _id: 'sthlm',
           children: [
             {
-              _id: 'globe',
+              _id: 'skansen',
               children: [],
-              name: 'Globe',
+              name: 'Skansen',
               parent: 'sthlm',
-              path: 'eu#se#sthlm#globe',
+              path: 'eu#se#sthlm#skansen',
             },
           ],
           name: 'Stockholm',
@@ -781,7 +781,7 @@ describe('mpath plugin', () => {
         tree[0].name.should.eql('Stockholm');
 
         tree[0].getChildrenTree(args).then(subtree => {
-          subtree[0].name.should.eql('Globe');
+          subtree[0].name.should.eql('Skansen');
         });
       });
     });
@@ -802,11 +802,11 @@ describe('mpath plugin', () => {
           path: 'eu#se#sthlm',
           children: [
             {
-              _id: 'globe',
+              _id: 'skansen',
               children: [],
-              name: 'Globe',
+              name: 'Skansen',
               parent: 'sthlm',
-              path: 'eu#se#sthlm#globe',
+              path: 'eu#se#sthlm#skansen',
             },
           ],
         },
@@ -835,10 +835,10 @@ describe('mpath plugin', () => {
         { _id: 'se', name: 'Sweden', parent: 'eu', path: 'eu#se' },
         { _id: 'sthlm', name: 'Stockholm', parent: 'se', path: 'eu#se#sthlm' },
         {
-          _id: 'globe',
-          name: 'Globe',
+          _id: 'skansen',
+          name: 'Skansen',
           parent: 'sthlm',
-          path: 'eu#se#sthlm#globe',
+          path: 'eu#se#sthlm#skansen',
         },
       ];
 
@@ -869,10 +869,10 @@ describe('mpath plugin', () => {
                   path: 'eu#se#sthlm',
                   children: [
                     {
-                      _id: 'globe',
-                      name: 'Globe',
+                      _id: 'skansen',
+                      name: 'Skansen',
                       parent: 'sthlm',
-                      path: 'eu#se#sthlm#globe',
+                      path: 'eu#se#sthlm#skansen',
                       children: [],
                     },
                   ],

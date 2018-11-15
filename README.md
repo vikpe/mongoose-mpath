@@ -86,7 +86,7 @@ europe
  - norway
  - sweden
    -- stockholm
-     --- globe
+     --- skansen
 ```
 
 ### getAncestors()
@@ -120,10 +120,10 @@ document.getAllChildren(conditions, [fields], [options])
 **Example**
 ```javascript
 const children = await sweden.getAllChildren({});
-// ancestors is an array of [stockholm, globe]
+// ancestors is an array of [stockholm, skansen]
 
 const children = await stockholm.getAllChildren({});
-// ancestors is an array of [globe]
+// ancestors is an array of [skansen]
 ```
 
 ### getChildrenTree()
@@ -169,7 +169,7 @@ const tree = await sweden.getChildrenTree();
     'name': 'sthlm',
     'children': [
       {
-        'name': 'globe',
+        'name': 'skansen',
         'children': [],          
       }
     ],
@@ -230,7 +230,7 @@ A Virtual field that equals to the level of a document in the hierarchy.
 ```
 africa.level    // 1
 sweden.level    // 2
-globe.level     // 4
+skansen.level     // 4
 ```
 
 ## More examples
@@ -242,7 +242,7 @@ europe
  - norway
  - sweden
    -- stockholm
-     --- globe
+     --- skansen
 ```
 
 
@@ -250,21 +250,21 @@ europe
 ```
 europe.getAncestors()       // (Array) []
 stockholm.getAncestors()    // (Array) [europe, sweden]
-globe.getAncestors()        // (Array) [europe, sweden, stockholm]
+skansen.getAncestors()        // (Array) [europe, sweden, stockholm]
 ```
 
 **getAllChildren()**
 ```
-europe.getAllChildren()       // (Array) [sweden, stockholm, globe]
-stockholm.getAllChildren()    // (Array) [globe]
-globe.getAllChildren()        // (Array) []
+europe.getAllChildren()       // (Array) [sweden, stockholm, skansen]
+stockholm.getAllChildren()    // (Array) [skansen]
+skansen.getAllChildren()        // (Array) []
 ```
 
 **getImmediateChildren()**
 ```
 europe.getImmediateChildren()       // (Array) [norway, sweden]
-stockholm.getImmediateChildren()    // (Array) [globe]
-globe.getImmediateChildren()        // (Array) []
+stockholm.getImmediateChildren()    // (Array) [skansen]
+skansen.getImmediateChildren()        // (Array) []
 ```
 
 **getChildrenTree()**
@@ -284,7 +284,7 @@ europe.getChildrenTree()
           'name': 'sthlm',
           'children': [
             {
-              'name': 'globe',
+              'name': 'skansen',
               'children': []          
             }
           ],
@@ -303,7 +303,7 @@ sweden.getChildrenTree()
     'name': 'sthlm',
     'children': [
       {
-        'name': 'globe',
+        'name': 'skansen',
         'children': [],          
       }
     ],
@@ -316,7 +316,7 @@ sweden.getChildrenTree()
 ```
 europe.getParent()       // (null)
 stockholm.getParent()    // (Object) sweden
-globe.getParent()        // (Object) stockholm
+skansen.getParent()        // (Object) stockholm
 ```
 
 **level**
@@ -326,7 +326,7 @@ europe.level       // (Number) 1
 norway.level       // (Number) 2
 sweden.level       // (Number) 2
 stockholm.level    // (Number) 3
-globe.level        // (Number) 4
+skansen.level      // (Number) 4
 ```
 
 ## Development
