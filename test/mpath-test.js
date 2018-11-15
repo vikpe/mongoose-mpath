@@ -111,11 +111,7 @@ describe('mpath plugin', () => {
     });
 
     it('should add fields to schema (custom options)', async () => {
-      const randomId = () =>
-        _
-            .shuffle(_.range(0, 9))
-            .join('')
-            .substr(0, 3);
+      const randomId = () => _.shuffle(_.range(0, 9)).join('');
 
       const CustomLocationSchema = new mongoose.Schema({
         _id: {type: String, default: randomId},
