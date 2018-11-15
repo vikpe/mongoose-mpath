@@ -785,7 +785,7 @@ describe('mpath plugin', () => {
 
     it('should filter by minLevel', async () => {
       const args = { fields: { _id: 1, name: 1 }, options: { lean: true }, minLevel: 3 };
-      const tree = await europe.getChildrenTree(args);
+      const tree = await Location.getChildrenTree(args);
 
       tree.should.eql([
         {
@@ -808,6 +808,19 @@ describe('mpath plugin', () => {
   });
 
   describe('util', () => {
+    it('should get level', function() {
+      let level;
+
+      level = MpathPlugin.util.getLevelByPathAndSeparator('', '#');
+      level.should.equal(1);
+
+      level = MpathPlugin.util.getLevelByPathAndSeparator('foo', '#');
+      level.should.equal(1);
+
+      level = MpathPlugin.util.getLevelByPathAndSeparator('foo#bar', '#');
+      level.should.equal(2);
+    });
+
     it('should createTree', () => {
       const nodes = [
         {_id: 'eu', name: 'Europe', parent: '', path: 'eu'},
