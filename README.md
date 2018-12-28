@@ -26,9 +26,6 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 }
 ```
 
-**Note**
-This plugins ads
-
 **Example setup**
 ```javascript
 import Mongoose from 'mongoose';
