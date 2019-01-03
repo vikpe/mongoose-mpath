@@ -227,7 +227,7 @@ A Virtual field that equals to the level of a document in the hierarchy.
 ```
 africa.level    // 1
 sweden.level    // 2
-skansen.level     // 4
+skansen.level   // 4
 ```
 
 ## More examples
@@ -247,21 +247,21 @@ europe
 ```
 europe.getAncestors()       // (Array) []
 stockholm.getAncestors()    // (Array) [europe, sweden]
-skansen.getAncestors()        // (Array) [europe, sweden, stockholm]
+skansen.getAncestors()      // (Array) [europe, sweden, stockholm]
 ```
 
 **getAllChildren()**
 ```
 europe.getAllChildren()       // (Array) [sweden, stockholm, skansen]
 stockholm.getAllChildren()    // (Array) [skansen]
-skansen.getAllChildren()        // (Array) []
+skansen.getAllChildren()      // (Array) []
 ```
 
 **getImmediateChildren()**
 ```
 europe.getImmediateChildren()       // (Array) [norway, sweden]
 stockholm.getImmediateChildren()    // (Array) [skansen]
-skansen.getImmediateChildren()        // (Array) []
+skansen.getImmediateChildren()      // (Array) []
 ```
 
 **getChildrenTree()**
@@ -313,7 +313,7 @@ sweden.getChildrenTree()
 ```
 europe.getParent()       // (null)
 stockholm.getParent()    // (Object) sweden
-skansen.getParent()        // (Object) stockholm
+skansen.getParent()      // (Object) stockholm
 ```
 
 **level**
