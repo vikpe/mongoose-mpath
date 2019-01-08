@@ -99,8 +99,7 @@ document.getAncestors(conditions, [fields], [options])
 
 **Example**
 ```javascript
-const ancestors = await stockholm.getAncestors({});
-// ancestors is an array of [europe, sweden]
+const ancestors = await stockholm.getAncestors({});    // (Array) [europe, sweden]
 ```
 
 ### getAllChildren()
@@ -116,11 +115,8 @@ document.getAllChildren(conditions, [fields], [options])
 
 **Example**
 ```javascript
-const children = await sweden.getAllChildren({});
-// ancestors is an array of [stockholm, skansen]
-
-const children = await stockholm.getAllChildren({});
-// ancestors is an array of [skansen]
+const children = await sweden.getAllChildren({});       // (Array) [stockholm, skansen]
+const children = await stockholm.getAllChildren({});    // (Array) [skansen]
 ```
 
 ### getChildrenTree()
@@ -188,11 +184,8 @@ document.getImmediateChildren(conditions, [fields], [options])
 
 **Example**
 ```javascript
-const children = await europe.getImmediateChildren({});
-// children is an array of [norway, sweden]
-
-const children = await sweden.getImmediateChildren({});
-// children is an array of [stockholm]
+const children = await europe.getImmediateChildren({});    // (Array) [norway, sweden]
+const children = await sweden.getImmediateChildren({});    // (Array) [stockholm]
 ```
 
 ### getParent()
@@ -208,11 +201,8 @@ document.getParent([fields], [options])
 
 **Example**
 ```javascript
-const parent = await sweden.getParent();
-// parent is an object equal to europe
-
-const parent = await stockholm.getParent();
-// parent is an object equal to sweden
+const parent = await sweden.getParent();       // (Object) europe
+const parent = await stockholm.getParent();    // (Object) sweden
 ```
 
 ### level
