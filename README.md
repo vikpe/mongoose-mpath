@@ -154,7 +154,7 @@ model.getChildrenTree([args])       // as static
 
 **Example**
 ```javascript
-const tree = await sweden.getChildrenTree();
+const tree = await sweden.getChildrenTree({});
 // tree is an array similar to
 /*
 [
