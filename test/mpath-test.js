@@ -4,6 +4,7 @@ import chai from 'chai';
 import mongoose from 'mongoose';
 import MpathPlugin from './../lib/mpath';
 import sinon from 'sinon';
+
 require('sinon-mongoose');
 chai.use(require('chai-subset'));
 
@@ -60,7 +61,11 @@ describe('mpath plugin', () => {
       name: 'Stockholm',
       parent: sweden,
     });
-    skansen = new Location({ _id: 'skansen', name: 'Skansen', parent: stockholm });
+    skansen = new Location({
+      _id: 'skansen',
+      name: 'Skansen',
+      parent: stockholm,
+    });
 
     await Location.deleteMany();
     await africa.save();
