@@ -27,7 +27,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^5.6.0",
+    "mongoose": "^5.6.1",
     "stream-worker": "^2.0.1"
   },
   "devDependencies": {
@@ -37,12 +37,12 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
-    "async": "^3.0.1",
-    "babel-eslint": "^10.0.1",
+    "async": "^3.1.0",
+    "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
     "chai-subset": "^1.6.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.1",
     "eslint-config-google": "^0.13.0",
     "lodash": "^4.17.11",
     "mocha": "^6.1.4",
