@@ -146,7 +146,7 @@ model.getChildrenTree([args])       // as static
     const args = {
       filters: {author: 'vikpe'},
       fields: '_id name',
-      options: false,
+      options: {sort: 'name'},
       populate: 'repos',
       minLevel: 2
     }
