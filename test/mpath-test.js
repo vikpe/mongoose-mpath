@@ -399,19 +399,46 @@ describe('mpath plugin', () => {
       locations.should.eql([{ _id: 'no' }, { _id: 'se' }]);
     });
 
-    it('using options (sort)', async () => {
-      const conditions = {};
-      const fields = '_id';
-      const options = {
-        sort: { name: -1 },
-        lean: true,
-      };
+    describe('using options (sort)', () => {
+      it('ASC', async () => {
+        const conditions = {};
+        const fields = 'name';
+        const options = {
+          sort: { name: 1 },
+          lean: true,
+        };
 
-      const locations = await europe.getImmediateChildren(
-        conditions,
-        fields,
-        options
-      );
+        const locations = await europe.getImmediateChildren(
+          conditions,
+          fields,
+          options,
+        );
+
+        locations.should.eql([
+          { _id: 'no', name: 'Norway' },
+          { _id: 'se', name: 'Sweden' },
+        ]);
+      });
+
+      it('DESC', async () => {
+        const conditions = {};
+        const fields = 'name';
+        const options = {
+          sort: { name: -1 },
+          lean: true,
+        };
+
+        const locations = await europe.getImmediateChildren(
+          conditions,
+          fields,
+          options,
+        );
+
+        locations.should.eql([
+          { _id: 'se', name: 'Sweden' },
+          { _id: 'no', name: 'Norway' },
+        ]);
+      });
     });
   });
 
