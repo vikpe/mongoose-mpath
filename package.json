@@ -22,11 +22,12 @@
   "scripts": {
     "test": "nyc --source-map --produce-source-map mocha --require @babel/polyfill --require @babel/register --timeout 8000 --exit",
     "test:watch": "nyc --source-map --produce-source-map mocha --require @babel/polyfill --require @babel/register -w",
-    "coverage": "nyc report --reporter=text-lcov > coverage/lcov.info",
+    "coverage": "mkdirp coverage && nyc report --reporter=text-lcov > coverage/lcov.info",
     "prettier": "prettier --write \"{lib,test}/**/*.js\""
   },
   "main": "index.js",
   "dependencies": {
+    "mkdirp": "^0.5.1",
     "mongoose": "^5.7.1",
     "stream-worker": "^2.0.1"
   },
