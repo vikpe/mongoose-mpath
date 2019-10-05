@@ -133,6 +133,7 @@ describe('mpath plugin', () => {
         'SomeOtherLocation',
         CustomLocationSchema
       );
+      await CustomLocation.deleteMany({}); // delete existing entries
 
       const schemaPaths = CustomLocation.schema.paths;
 
