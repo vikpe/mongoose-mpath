@@ -13,6 +13,7 @@ const should = chai.should();
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 
 describe('mpath plugin', () => {
   // Utils
