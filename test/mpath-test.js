@@ -129,19 +129,19 @@ describe('mpath plugin', () => {
 
       CustomLocationSchema.plugin(MpathPlugin, pluginOptions);
 
-      const CustomLocationModel = mongoose.model(
+      const CustomLocation = mongoose.model(
         'SomeOtherLocation',
         CustomLocationSchema
       );
 
-      const schemaPaths = CustomLocationModel.schema.paths;
+      const schemaPaths = CustomLocation.schema.paths;
 
       // check parent type
       schemaPaths.parent.options.type.should.eql(String);
 
       // check path separator
-      const parentLocation = new CustomLocationModel({ name: 'Super City' });
-      const childLocation = new CustomLocationModel({
+      const parentLocation = new CustomLocation({ name: 'Super City' });
+      const childLocation = new CustomLocation({
         name: 'Sub City',
         parent: parentLocation,
       });
