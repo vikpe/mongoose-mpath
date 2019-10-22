@@ -27,7 +27,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^5.7.4",
+    "mongoose": "^5.7.6",
     "stream-worker": "^2.0.1"
   },
   "devDependencies": {
@@ -37,7 +37,7 @@
     "@babel/polyfill": "^7.6.0",
     "@babel/preset-env": "^7.6.3",
     "@babel/register": "^7.6.2",
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.0.19",
     "async": "^3.1.0",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
@@ -47,7 +47,7 @@
     "eslint-config-google": "^0.14.0",
     "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
-    "mocha": "^6.2.1",
+    "mocha": "^6.2.2",
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
     "shortid": "^2.2.15",
