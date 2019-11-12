@@ -28,6 +28,7 @@
   "main": "index.js",
   "dependencies": {
     "mongoose": "^5.7.8",
+    "lodash": "^4.17.15",
     "stream-worker": "^2.0.1"
   },
   "devDependencies": {
@@ -45,7 +46,6 @@
     "chai-subset": "^1.6.0",
     "eslint": "^6.6.0",
     "eslint-config-google": "^0.14.0",
-    "lodash": "^4.17.15",
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
