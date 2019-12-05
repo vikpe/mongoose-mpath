@@ -1,6 +1,6 @@
 {
   "name": "mongoose-mpath",
-  "version": "2.0.25",
+  "version": "2.0.26",
   "description": "Mongoose plugin for tree hierarchy using the materialized path pattern.",
   "keywords": [
     "mongoose",
