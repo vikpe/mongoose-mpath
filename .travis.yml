@@ -1,8 +1,10 @@
 language: node_js
 services: mongodb
 node_js:
-  - "12"
-  - "13"
+  - 8
+  - 10
+  - 12
+  - 13
 cache:
   timeout: 3600
   directories:
