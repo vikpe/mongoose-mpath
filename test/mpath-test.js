@@ -84,7 +84,6 @@ describe('mpath plugin', () => {
       {
         connectTimeoutMS: 3000,
         keepAlive: 2000,
-        reconnectTries: 30,
         useNewUrlParser: true,
       }
     );
