@@ -156,7 +156,6 @@ describe('mpath plugin', () => {
 
   describe('pre save middleware', () => {
     it("should not perform any operations when document isn't new or hasn't changed parent", async () => {
-      sinon.spy(sweden.collection, 'findOne');
       sinon.spy(sweden.collection, 'updateMany');
 
       const pathBeforeSave = sweden.path;
@@ -164,7 +163,6 @@ describe('mpath plugin', () => {
       await sweden.save();
 
       sweden.path.should.equal(pathBeforeSave);
-      sinon.assert.notCalled(sweden.collection.findOne);
       sinon.assert.notCalled(sweden.collection.updateMany);
     });
 
