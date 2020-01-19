@@ -27,18 +27,18 @@
   },
   "main": "index.js",
   "dependencies": {
-    "mongoose": "^5.8.4",
+    "mongoose": "^5.8.9",
     "lodash": "^4.17.15",
     "stream-worker": "^2.0.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.7",
-    "@babel/core": "^7.7.7",
-    "@babel/node": "^7.7.7",
-    "@babel/polyfill": "^7.7.0",
-    "@babel/preset-env": "^7.7.7",
-    "@babel/register": "^7.7.7",
-    "@types/jest": "^24.0.25",
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/node": "^7.8.3",
+    "@babel/polyfill": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/register": "^7.8.3",
+    "@types/jest": "^24.9.0",
     "async": "^3.1.0",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
@@ -47,11 +47,11 @@
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^6.2.2",
+    "mocha": "^7.0.0",
     "nyc": "^15.0.0",
     "prettier": "^1.19.1",
     "shortid": "^2.2.15",
-    "sinon": "7.x",
+    "sinon": "8.x",
     "sinon-mongoose": "^2.3.0"
   }
 }
