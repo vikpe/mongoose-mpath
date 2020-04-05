@@ -17,7 +17,7 @@ mongoose.set('useUnifiedTopology', true);
 
 describe('mpath plugin', () => {
   // Utils
-  const locationsToPathObject = locations =>
+  const locationsToPathObject = (locations) =>
     locations.reduce((result, location) => {
       result[location.name] = location.path;
       return result;
@@ -201,7 +201,7 @@ describe('mpath plugin', () => {
       });
     });
 
-    it('should allow empty parent when using string as ID type', async function() {
+    it('should allow empty parent when using string as ID type', async function () {
       const randomId = () => _.shuffle(_.range(0, 9)).join('');
       const LocationSchema = new mongoose.Schema({
         _id: { type: String, default: randomId },
@@ -354,7 +354,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Norway', 'Sweden']);
+      locations.map((l) => l.name).should.eql(['Norway', 'Sweden']);
     });
 
     it('using conditions (object)', async () => {
@@ -368,7 +368,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Norway']);
+      locations.map((l) => l.name).should.eql(['Norway']);
     });
 
     it('using conditions ($query)', async () => {
@@ -382,7 +382,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Norway']);
+      locations.map((l) => l.name).should.eql(['Norway']);
     });
 
     it('using fields', async () => {
@@ -454,7 +454,7 @@ describe('mpath plugin', () => {
       );
 
       locations
-        .map(l => l.name)
+        .map((l) => l.name)
         .should.eql(['Norway', 'Sweden', 'Stockholm', 'Skansen']);
     });
 
@@ -469,7 +469,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Stockholm']);
+      locations.map((l) => l.name).should.eql(['Stockholm']);
     });
 
     it('using conditions ($query)', async () => {
@@ -483,7 +483,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Stockholm']);
+      locations.map((l) => l.name).should.eql(['Stockholm']);
     });
 
     it('using fields', async () => {
@@ -595,7 +595,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Europe', 'Sweden']);
+      locations.map((l) => l.name).should.eql(['Europe', 'Sweden']);
     });
 
     it('using conditions (plain object)', async () => {
@@ -609,7 +609,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Europe']);
+      locations.map((l) => l.name).should.eql(['Europe']);
     });
 
     it('using conditions ($query)', async () => {
@@ -623,7 +623,7 @@ describe('mpath plugin', () => {
         options
       );
 
-      locations.map(l => l.name).should.eql(['Europe']);
+      locations.map((l) => l.name).should.eql(['Europe']);
     });
 
     it('using fields', async () => {
@@ -832,10 +832,10 @@ describe('mpath plugin', () => {
     it('options.lean=false should return Mongoose Documents', async () => {
       const args = { fields: { _id: 1, name: 1 }, options: { lean: false } };
 
-      return sweden.getChildrenTree(args).then(tree => {
+      return sweden.getChildrenTree(args).then((tree) => {
         tree[0].name.should.eql('Stockholm');
 
-        tree[0].getChildrenTree(args).then(subtree => {
+        tree[0].getChildrenTree(args).then((subtree) => {
           subtree[0].name.should.eql('Skansen');
         });
       });
@@ -930,7 +930,7 @@ describe('mpath plugin', () => {
   });
 
   describe('util', () => {
-    it('should get level', function() {
+    it('should get level', function () {
       let level;
 
       level = MpathPlugin.util.getLevelByPathAndSeparator('', '#');
@@ -1103,7 +1103,7 @@ describe('mpath plugin', () => {
         ],
       ];
 
-      testsValues.forEach(value => {
+      testsValues.forEach((value) => {
         MpathPlugin.util.mongoSortToLodashSort(value[0]).should.eql(value[1]);
       });
     });
