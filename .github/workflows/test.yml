@@ -25,16 +25,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache node modules
-          uses: actions/cache@v2
-          env:
-            cache-name: cache-node-modules
-          with:
-            path: ~/.npm
-            key: ${{ maxtrix.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-            restore-keys: |
-              ${{ maxtrix.os }}-build-${{ env.cache-name }}-
-              ${{ maxtrix.os }}-build-
-              ${{ maxtrix.os }}-
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ maxtrix.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ maxtrix.os }}-build-${{ env.cache-name }}-
+            ${{ maxtrix.os }}-build-
+            ${{ maxtrix.os }}-
       - name: Install Dependencies
         run: npm install
 
