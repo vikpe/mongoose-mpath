@@ -1,0 +1,52 @@
+name: test
+
+on: [push]
+
+services:
+  mongodb:
+    image: mongo:4
+    ports:
+      - 27017:27017
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [13.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+          uses: actions/cache@v2
+          env:
+            cache-name: cache-node-modules
+          with:
+            path: ~/.npm
+            key: ${{ maxtrix.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+              ${{ maxtrix.os }}-build-${{ env.cache-name }}-
+              ${{ maxtrix.os }}-build-
+              ${{ maxtrix.os }}-
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
+      - name: Create coverage report
+        run: npm run coverage
+      - name: Install CodeCov
+      - run: npm install -g codecov
+      - name: Upload coverage to Codecov
+          uses: codecov/codecov-action@v1
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}
+            file: coverage/lcov.info
+            name: ${{ matrix.os }}, node ${{ matrix.node-version }}
