@@ -22,7 +22,7 @@
   "scripts": {
     "test": "nyc --source-map --produce-source-map mocha --require @babel/polyfill --require @babel/register --timeout 8000 --exit",
     "test:watch": "nyc --source-map --produce-source-map mocha --require @babel/polyfill --require @babel/register -w",
-    "coverage": "mkdirp coverage && nyc report --reporter=text-lcov > coverage/lcov.info",
+    "coverage": "nyc report --reporter=text-lcov > lcov.info",
     "prettier": "prettier --write \"{lib,test}/**/*.js\""
   },
   "main": "index.js",

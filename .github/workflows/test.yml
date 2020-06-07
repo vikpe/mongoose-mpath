@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [13.x]
+        node-version: [8.x, 10.x, 12.x, 13.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -51,5 +51,5 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage/lcov.info
+          file: lcov.info
           name: ${{ matrix.os }}, node ${{ matrix.node-version }}

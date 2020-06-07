@@ -1,6 +1,6 @@
 .idea/
 .nyc_output/
 node_modules/
-coverage/*
 !coverage/.gitkeep
 .DS_Store
+lcov.info
