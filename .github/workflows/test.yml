@@ -45,8 +45,8 @@ jobs:
       - name: Install CodeCov
       - run: npm install -g codecov
       - name: Upload coverage to Codecov
-          uses: codecov/codecov-action@v1
-          with:
-            token: ${{ secrets.CODECOV_TOKEN }}
-            file: coverage/lcov.info
-            name: ${{ matrix.os }}, node ${{ matrix.node-version }}
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: coverage/lcov.info
+          name: ${{ matrix.os }}, node ${{ matrix.node-version }}
