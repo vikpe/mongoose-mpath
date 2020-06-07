@@ -40,10 +40,13 @@ jobs:
 
       - name: Run tests
         run: npm run test
+
       - name: Create coverage report
         run: npm run coverage
+
       - name: Install CodeCov
-      - run: npm install -g codecov
+        run: npm install -g codecov
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
