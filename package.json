@@ -44,8 +44,6 @@
     "babel-loader": "^8.1.0",
     "chai": "^4.2.0",
     "chai-subset": "^1.6.0",
-    "eslint": "^7.2.0",
-    "eslint-config-google": "^0.14.0",
     "mkdirp": "^1.0.4",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
