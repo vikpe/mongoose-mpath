@@ -30,11 +30,11 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ~/.npm
-          key: ${{ maxtrix.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ maxtrix.os }}-build-${{ env.cache-name }}-
-            ${{ maxtrix.os }}-build-
-            ${{ maxtrix.os }}-
+            ${{ matrix.os }}-build-${{ env.cache-name }}-
+            ${{ matrix.os }}-build-
+            ${{ matrix.os }}-
       - name: Install Dependencies
         run: npm install
 
