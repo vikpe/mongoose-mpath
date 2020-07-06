@@ -9,7 +9,7 @@ npm install mongoose-mpath
 ## Setup
 > **Important note**
 >
-> This plugins adds `parent` and `path` fields to the schema. You should not define them in the schema which the plugin is enabled on.
+> This plugins adds `parent`, `path` and `children` fields to the schema. You should not define them in the schema which the plugin is enabled on.
 
 **Semantics**
 ```javascript
@@ -120,7 +120,7 @@ const children = await stockholm.getAllChildren({});    // (Array) [skansen]
 ```
 
 ### getChildrenTree()
-Returns all children of a document formatted as a tree hierarchy.  Returns a promise.
+Returns all children of a document formatted as a tree hierarchy. Returns a promise.
 
 **Signature**
 ```
@@ -219,6 +219,10 @@ africa.level    // 1
 sweden.level    // 2
 skansen.level   // 4
 ```
+
+### children
+Placeholder variable populated when calling `.getChildrenTree()`.
+
 
 ## More examples
 

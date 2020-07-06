@@ -107,9 +107,8 @@ describe('mpath plugin', () => {
       );
 
       const schemaPaths = LocationModel.schema.paths;
-
+      should.exist(schemaPaths.children);
       should.exist(schemaPaths.parent);
-
       should.exist(schemaPaths.path);
     });
 
@@ -829,14 +828,30 @@ describe('mpath plugin', () => {
       locationTree.should.eql(expectedTree);
     });
 
-    it('options.lean=false should return Mongoose Documents', async () => {
-      const args = { fields: { _id: 1, name: 1 }, options: { lean: false } };
+    describe('options.lean=false should return Mongoose Documents', () => {
+      it('document method', async () => {
+        const args = { fields: { _id: 1, name: 1 }, options: { lean: false } };
 
-      return sweden.getChildrenTree(args).then((tree) => {
-        tree[0].name.should.eql('Stockholm');
+        return sweden.getChildrenTree(args).then((tree) => {
+          tree[0].name.should.eql('Stockholm');
+          tree[0].children[0].name.should.eql('Skansen');
 
-        tree[0].getChildrenTree(args).then((subtree) => {
-          subtree[0].name.should.eql('Skansen');
+          tree[0].getChildrenTree(args).then((subtree) => {
+            subtree[0].name.should.eql('Skansen');
+          });
+        });
+      });
+
+      it('static method', async () => {
+        const args = { fields: { _id: 1, name: 1 }, options: { lean: false } };
+
+        return Location.getChildrenTree(args).then((tree) => {
+          tree[0].name.should.eql('Africa');
+          tree[1].name.should.eql('Europe');
+          tree[1].children[0].name.should.eql('Norway');
+          tree[1].children[1].name.should.eql('Sweden');
+          tree[1].children[1].children[0].name.should.eql('Stockholm');
+          tree[1].children[1].children[0].children[0].name.should.eql('Skansen');
         });
       });
     });
