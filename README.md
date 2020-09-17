@@ -136,7 +136,8 @@ model.getChildrenTree([args])       // as static
         (Object|String) fields: null,    // mongoose query fields (null equals all fields)
         (Object) options: {},            // mongoose query options
         (String) populate: '',           // string to passed to populate()
-        (int) minLevel: 1,               // minimum level to search from
+        (int) minLevel: 1,               // minimum level to include
+        (int) maxLevel: 9999,            // maximum level to include
         (Mongoose.document) rootDoc      // mongoose document
     }
     ```
@@ -148,7 +149,8 @@ model.getChildrenTree([args])       // as static
       fields: '_id name',
       options: {sort: 'name'},
       populate: 'repos',
-      minLevel: 2
+      minLevel: 2,
+      maxLevel: 4
     }
     ```
 

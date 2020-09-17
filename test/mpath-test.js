@@ -851,7 +851,9 @@ describe('mpath plugin', () => {
           tree[1].children[0].name.should.eql('Norway');
           tree[1].children[1].name.should.eql('Sweden');
           tree[1].children[1].children[0].name.should.eql('Stockholm');
-          tree[1].children[1].children[0].children[0].name.should.eql('Skansen');
+          tree[1].children[1].children[0].children[0].name.should.eql(
+            'Skansen'
+          );
         });
       });
     });
@@ -879,6 +881,74 @@ describe('mpath plugin', () => {
               path: 'eu#se#sthlm#skansen',
             },
           ],
+        },
+      ]);
+    });
+
+    it('should filter by maxLevel', async () => {
+      const args = {
+        fields: { _id: 1, name: 1 },
+        options: { lean: true },
+        maxLevel: 2,
+      };
+      const tree = await Location.getChildrenTree(args);
+
+      tree.should.eql([
+        {
+          _id: 'af',
+          name: 'Africa',
+          path: 'af',
+          children: [],
+        },
+        {
+          _id: 'eu',
+          name: 'Europe',
+          path: 'eu',
+          children: [
+            {
+              _id: 'no',
+
+              name: 'Norway',
+              parent: 'eu',
+              path: 'eu#no',
+              children: [],
+            },
+            {
+              _id: 'se',
+              name: 'Sweden',
+              parent: 'eu',
+              path: 'eu#se',
+              children: [],
+            },
+          ],
+        },
+      ]);
+    });
+
+    it('should filter by minLevel and maxLevel', async () => {
+      const args = {
+        fields: { _id: 1, name: 1 },
+        options: { lean: true },
+        minLevel: 2,
+        maxLevel: 2,
+      };
+      const tree = await Location.getChildrenTree(args);
+
+      tree.should.eql([
+        {
+          _id: 'no',
+
+          name: 'Norway',
+          parent: 'eu',
+          path: 'eu#no',
+          children: [],
+        },
+        {
+          _id: 'se',
+          name: 'Sweden',
+          parent: 'eu',
+          path: 'eu#se',
+          children: [],
         },
       ]);
     });
