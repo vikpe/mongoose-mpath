@@ -28,17 +28,17 @@
   "main": "index.js",
   "dependencies": {
     "lodash": "^4.17.20",
-    "mongoose": "^5.10.9",
+    "mongoose": "^5.10.11",
     "stream-worker": "^2.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.11.6",
-    "@babel/core": "^7.11.6",
-    "@babel/node": "^7.10.5",
-    "@babel/polyfill": "^7.11.5",
-    "@babel/preset-env": "^7.11.5",
-    "@babel/register": "^7.11.5",
-    "@types/jest": "^26.0.14",
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/node": "^7.12.1",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/register": "^7.12.1",
+    "@types/jest": "^26.0.15",
     "async": "^3.2.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
@@ -48,7 +48,7 @@
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
     "prettier": "^2.1.2",
-    "shortid": "^2.2.15",
+    "shortid": "^2.2.16",
     "sinon": "^7.5.0",
     "sinon-mongoose": "^2.3.0"
   }
