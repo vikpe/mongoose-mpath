@@ -331,4 +331,4 @@ Feedback and pull requests are most welcome!
 3. Run tests: `npm run test`
 
 ## Credits
-This plugin is inspired by [swayf/mongoose-path-tree](https://github.com/swayf/mongoose-path-tree).
+This plugin is inspired by `mongoose-path-tree` by [swayf](https://github.com/swayf).
