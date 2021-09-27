@@ -326,7 +326,7 @@ skansen.level      // (Number) 4
 Feedback and pull requests are most welcome!
 
 1. `npm install mongoose-mpath`
-2. [Download and install MongoDB (Community Server)](https://www.mongodb.com/download-center#community).
+2. [Install MongoDB (Community Server)](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/#install-mongodb-community-edition).
 3. Start MongoDB: `mongod`
 3. Run tests: `npm run test`
 
