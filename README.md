@@ -8,7 +8,7 @@
 * Mongoose >= 6
 
 ## Installation
-```npm
+```shell
 npm install mongoose-mpath
 ```
 
