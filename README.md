@@ -1,6 +1,11 @@
 # Mongoose Materialized Path [![test](https://github.com/vikpe/mongoose-mpath/workflows/test/badge.svg)](https://github.com/vikpe/mongoose-mpath/actions?query=workflow%3Atest) [![codecov](https://codecov.io/gh/vikpe/mongoose-mpath/branch/master/graph/badge.svg)](https://codecov.io/gh/vikpe/mongoose-mpath)
 > Mongoose plugin for tree hierarchy using the [materialized path pattern](https://docs.mongodb.com/manual/tutorial/model-tree-structures-with-materialized-paths/).
 
+## Requirements
+
+* Node.js >= 14
+* MongoDB >= 4
+
 ## Installation
 ```npm
 npm install mongoose-mpath
