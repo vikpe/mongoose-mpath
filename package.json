@@ -28,7 +28,7 @@
   "main": "index.js",
   "dependencies": {
     "lodash": "^4.17.21",
-    "mongoose": "^5.13.7",
+    "mongoose": "^6.8.2",
     "stream-worker": "^2.0.2"
   },
   "devDependencies": {

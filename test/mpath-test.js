@@ -11,9 +11,7 @@ chai.use(require('chai-subset'));
 const should = chai.should();
 
 mongoose.Promise = global.Promise;
-mongoose.set('useFindAndModify', false);
-mongoose.set('useCreateIndex', true);
-mongoose.set('useUnifiedTopology', true);
+mongoose.set('strictQuery', false);
 
 describe('mpath plugin', () => {
   // Utils
@@ -83,8 +81,7 @@ describe('mpath plugin', () => {
       'mongodb://localhost:27017/mongoose-path-tree',
       {
         connectTimeoutMS: 3000,
-        keepAlive: 2000,
-        useNewUrlParser: true,
+        keepAlive: true,
       }
     );
 
@@ -298,9 +295,7 @@ describe('mpath plugin', () => {
           'mongodb://localhost:27017/mongoose-path-tree',
           {
             connectTimeoutMS: 3000,
-            keepAlive: 2000,
-            reconnectTries: 30,
-            useNewUrlParser: true,
+            keepAlive: true,
           }
         );
 
@@ -358,20 +353,6 @@ describe('mpath plugin', () => {
 
     it('using conditions (object)', async () => {
       const conditions = { name: 'Norway' };
-      const fields = null;
-      const options = {};
-
-      const locations = await europe.getImmediateChildren(
-        conditions,
-        fields,
-        options
-      );
-
-      locations.map((l) => l.name).should.eql(['Norway']);
-    });
-
-    it('using conditions ($query)', async () => {
-      const conditions = { $query: { name: 'Norway' } };
       const fields = null;
       const options = {};
 
@@ -459,20 +440,6 @@ describe('mpath plugin', () => {
 
     it('using conditions (object)', async () => {
       const conditions = { name: 'Stockholm' };
-      const fields = null;
-      const options = {};
-
-      const locations = await europe.getAllChildren(
-        conditions,
-        fields,
-        options
-      );
-
-      locations.map((l) => l.name).should.eql(['Stockholm']);
-    });
-
-    it('using conditions ($query)', async () => {
-      const conditions = { $query: { name: 'Stockholm' } };
       const fields = null;
       const options = {};
 
@@ -599,20 +566,6 @@ describe('mpath plugin', () => {
 
     it('using conditions (plain object)', async () => {
       const conditions = { name: 'Europe' };
-      const fields = null;
-      const options = {};
-
-      const locations = await stockholm.getAncestors(
-        conditions,
-        fields,
-        options
-      );
-
-      locations.map((l) => l.name).should.eql(['Europe']);
-    });
-
-    it('using conditions ($query)', async () => {
-      const conditions = { $query: { name: 'Europe' } };
       const fields = null;
       const options = {};
 
