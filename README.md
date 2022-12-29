@@ -5,6 +5,7 @@
 
 * Node.js >= 14
 * MongoDB >= 4
+* Mongoose >= 6
 
 ## Installation
 ```npm
