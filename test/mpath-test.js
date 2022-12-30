@@ -27,6 +27,7 @@ describe('mpath plugin', () => {
   let LocationSchema = new mongoose.Schema({ _id: String, name: String });
 
   LocationSchema.plugin(MpathPlugin, {
+    modelName: 'Location',
     idType: String,
     pathSeparator: '#',
     onDelete: 'REPARENT',
@@ -94,9 +95,35 @@ describe('mpath plugin', () => {
   });
 
   describe('setup', () => {
+    it('should throw if ref is not defined', () => {
+      const init = () => {
+        const DefaultLocationSchema = new mongoose.Schema({ name: String });
+        DefaultLocationSchema.plugin(MpathPlugin);
+      };
+
+      should.Throw(
+        () => init(),
+        Error,
+        'Invalid mpath options - "modelName" is required'
+      );
+    });
+
+    it('should throw if ref is empty', () => {
+      const init = () => {
+        const DefaultLocationSchema = new mongoose.Schema({ name: String });
+        DefaultLocationSchema.plugin(MpathPlugin, { modelName: '' });
+      };
+
+      should.Throw(
+        () => init(),
+        Error,
+        'Invalid mpath options - "modelName" is required'
+      );
+    });
+
     it('should add fields to schema (default options)', () => {
       const DefaultLocationSchema = new mongoose.Schema({ name: String });
-      DefaultLocationSchema.plugin(MpathPlugin);
+      DefaultLocationSchema.plugin(MpathPlugin, { modelName: 'SomeLocation' });
 
       const LocationModel = dbConnection.model(
         'SomeLocation',
@@ -117,12 +144,11 @@ describe('mpath plugin', () => {
         name: String,
       });
 
-      const pluginOptions = {
+      CustomLocationSchema.plugin(MpathPlugin, {
+        modelName: 'SomeOtherLocation',
         idType: String,
         pathSeparator: '|',
-      };
-
-      CustomLocationSchema.plugin(MpathPlugin, pluginOptions);
+      });
 
       const CustomLocation = mongoose.model(
         'SomeOtherLocation',
@@ -203,7 +229,10 @@ describe('mpath plugin', () => {
         _id: { type: String, default: randomId },
         name: String,
       });
-      LocationSchema.plugin(MpathPlugin, { idType: String });
+      LocationSchema.plugin(MpathPlugin, {
+        modelName: 'LocationWithStringAsIdType',
+        idType: String,
+      });
       const LocationModel = mongoose.model(
         'LocationWithStringAsIdType',
         LocationSchema
@@ -286,6 +315,7 @@ describe('mpath plugin', () => {
 
         LocationSchema = new mongoose.Schema({ _id: String, name: String });
         LocationSchema.plugin(MpathPlugin, {
+          modelName: 'Location',
           idType: String,
           pathSeparator: '#',
           onDelete: 'DELETE', // <- updated plugin option
@@ -964,6 +994,17 @@ describe('mpath plugin', () => {
           },
         ]);
       });
+    });
+  });
+
+  describe('using populate()', () => {
+    it('populate', async () => {
+      const result = await Location.find({ name: 'Stockholm' }).populate(
+        'parent'
+      );
+      const sthlm = result[0];
+      sthlm.name.should.eql('Stockholm');
+      sthlm.parent.name.should.eql('Sweden');
     });
   });
 

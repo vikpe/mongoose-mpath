@@ -25,7 +25,8 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 **Plugin options**
 
 ```javascript
-{
+const options = {
+  modelName:     'MyModel',        // Name of model
   pathSeparator: '#',              // String used to separate ids in path
   onDelete:      'REPARENT',       // 'REPARENT' or 'DELETE'
   idType:        Schema.ObjectId   // Type used for model id
@@ -38,7 +39,7 @@ import Mongoose from 'mongoose';
 import MpathPlugin from 'mongoose-mpath';
 
 const LocationSchema = new Mongoose.Schema({name: String});
-LocationSchema.plugin(MpathPlugin);
+LocationSchema.plugin(MpathPlugin, {modelName: 'Location'});
 
 const LocationModel = Mongoose.model('Location', LocationSchema);
 
