@@ -999,10 +999,9 @@ describe('mpath plugin', () => {
 
   describe('find() using populate()', () => {
     it('should populate', async () => {
-      const result = await Location.find({ name: 'Stockholm' }).populate(
+      const sthlm = await Location.findOne({ name: 'Stockholm' }).populate(
         'parent'
       );
-      const sthlm = result[0];
       sthlm.name.should.eql('Stockholm');
       sthlm.parent.name.should.eql('Sweden');
     });
