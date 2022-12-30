@@ -27,9 +27,9 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 ```javascript
 const options = {
   modelName:     'MyModel',        // Name of model
-  pathSeparator: '#',              // String used to separate ids in path
-  onDelete:      'REPARENT',       // 'REPARENT' or 'DELETE'
-  idType:        Schema.ObjectId   // Type used for model id
+  pathSeparator: '#',              // (optional) String used to separate ids in path
+  onDelete:      'REPARENT',       // (optional) 'REPARENT' or 'DELETE'
+  idType:        Schema.ObjectId   // (optional) Type used for model id
 }
 ```
 
