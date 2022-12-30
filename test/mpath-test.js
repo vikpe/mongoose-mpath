@@ -997,8 +997,8 @@ describe('mpath plugin', () => {
     });
   });
 
-  describe('using populate()', () => {
-    it('populate', async () => {
+  describe('find() using populate()', () => {
+    it('should populate', async () => {
       const result = await Location.find({ name: 'Stockholm' }).populate(
         'parent'
       );
