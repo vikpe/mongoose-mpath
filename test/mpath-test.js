@@ -621,7 +621,7 @@ describe('mpath plugin', () => {
       let ancestors = await gamma.getAncestors();
       ancestors.map((l) => l.name).should.eql(['Alpha', 'Beta']);
 
-      // parent change
+      // after parent change
       const delta = new ObjectIdModel({ name: 'Delta' });
       await delta.save();
       beta.parent = delta;
