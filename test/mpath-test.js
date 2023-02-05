@@ -581,17 +581,57 @@ describe('mpath plugin', () => {
 
   describe('getAncestors()', () => {
     it('using default params', async () => {
-      const conditions = {};
-      const fields = null;
-      const options = {};
+      // initial
+      let ancestors = await skansen.getAncestors();
+      ancestors
+        .map((l) => l.name)
+        .should.eql(['Europe', 'Sweden', 'Stockholm']);
 
-      const locations = await stockholm.getAncestors(
-        conditions,
-        fields,
-        options
-      );
+      // after parent change
+      const gothenburg = new Location({
+        _id: 'gtb',
+        name: 'Gothenburg',
+        parent: sweden,
+      });
+      await gothenburg.save();
 
-      locations.map((l) => l.name).should.eql(['Europe', 'Sweden']);
+      skansen.parent = gothenburg;
+      await skansen.save();
+      skansen = await Location.findOne({ _id: 'skansen' });
+
+      ancestors = await skansen.getAncestors();
+      ancestors
+        .map((l) => l.name)
+        .should.eql(['Europe', 'Sweden', 'Gothenburg']);
+    });
+
+    it('using default params (idType = ObjectID)', async () => {
+      const ObjectIdSchema = new mongoose.Schema({ name: String });
+      ObjectIdSchema.plugin(MpathPlugin, { modelName: 'ObjectIdModel' });
+      const ObjectIdModel = mongoose.model('ObjectIdModel', ObjectIdSchema);
+
+      const alpha = new ObjectIdModel({ name: 'Alpha' });
+      const beta = new ObjectIdModel({ name: 'Beta', parent: alpha });
+      let gamma = new ObjectIdModel({ name: 'Gamma', parent: beta });
+      await alpha.save();
+      await beta.save();
+      await gamma.save();
+
+      // initial
+      let ancestors = await gamma.getAncestors();
+      ancestors.map((l) => l.name).should.eql(['Alpha', 'Beta']);
+
+      // after parent change
+      const delta = new ObjectIdModel({ name: 'Delta' });
+      await delta.save();
+      beta.parent = delta;
+      await beta.save();
+      gamma = await ObjectIdModel.findOne({ name: 'Gamma' });
+
+      ancestors = await gamma.getAncestors();
+      ancestors.map((l) => l.name).should.eql(['Delta', 'Beta']);
+
+      await ObjectIdModel.deleteMany();
     });
 
     it('using conditions (plain object)', async () => {
