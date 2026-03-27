@@ -26,12 +26,17 @@ MySchema.plugin(MpathPlugin, [PLUGIN OPTIONS]);
 
 ```javascript
 const options = {
-  modelName:     'MyModel',        // Name of model
-  pathSeparator: '#',              // (optional) String used to separate ids in path
-  onDelete:      'REPARENT',       // (optional) 'REPARENT' or 'DELETE'
-  idType:        Schema.ObjectId   // (optional) Type used for model id
+  modelName:       'MyModel',        // Name of model
+  pathSeparator:   '#',              // (optional) String used to separate ids in path
+  onDelete:        'REPARENT',       // (optional) 'REPARENT' or 'DELETE'
+  idType:          Schema.ObjectId,  // (optional) Type used for model id
+  parentFieldName: 'parent',         // (optional) Field name used to store the parent reference
 }
 ```
+
+> **Note on `parentFieldName`**
+>
+> By default the plugin adds a `parent` field to the schema. If your existing collection already uses a different field name (e.g. `parentId`) you can set `parentFieldName` to match it, which avoids renaming the field in MongoDB. All plugin methods (`getImmediateChildren`, `getAllChildren`, `getParent`, `getChildrenTree`, etc.) will use the configured field name automatically.
 
 **Example setup**
 ```javascript

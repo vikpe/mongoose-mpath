@@ -1210,6 +1210,55 @@ describe('mpath plugin', () => {
       });
     });
 
+    it('should support custom parentFieldName option', async () => {
+      const RegionSchema = new mongoose.Schema({ _id: String, name: String });
+
+      RegionSchema.plugin(MpathPlugin, {
+        modelName: 'Region',
+        idType: String,
+        pathSeparator: '#',
+        parentFieldName: 'region',
+      });
+
+      const Region = mongoose.model('Region', RegionSchema);
+      await Region.deleteMany({});
+
+      const schemaPaths = Region.schema.paths;
+      should.exist(schemaPaths.region);
+      should.not.exist(schemaPaths.parent);
+      should.exist(schemaPaths.path);
+
+      const world = new Region({ _id: 'world', name: 'World' });
+      const europe = new Region({ _id: 'eu', name: 'Europe', region: world });
+      const sweden = new Region({ _id: 'se', name: 'Sweden', region: europe });
+
+      await world.save();
+      await europe.save();
+      await sweden.save();
+
+      const savedEurope = await Region.findById('eu');
+      savedEurope.path.should.equal('world#eu');
+
+      const savedSweden = await Region.findById('se');
+      savedSweden.path.should.equal('world#eu#se');
+
+      const worldChildren = await world.getImmediateChildren();
+      worldChildren.should.have.lengthOf(1);
+      worldChildren[0]._id.should.equal('eu');
+
+      const allChildren = await world.getAllChildren();
+      allChildren.should.have.lengthOf(2);
+
+      const ancestors = await savedSweden.getAncestors();
+      ancestors.map((a) => a._id).should.eql(['world', 'eu']);
+
+      const tree = await world.getChildrenTree({ options: { lean: true } });
+      tree.should.have.lengthOf(1);
+      tree[0]._id.should.equal('eu');
+      tree[0].children.should.have.lengthOf(1);
+      tree[0].children[0]._id.should.equal('se');
+    });
+
     it('should mongoSortToLodashSort', () => {
       const testsValues = [
         [{}, { keys: [], orders: [] }],
